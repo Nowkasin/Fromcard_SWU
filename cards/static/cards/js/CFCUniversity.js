@@ -257,11 +257,11 @@ if (chk) {
       const parts = [];
 
       // 🔥 ลบแค่คำ label แต่ไม่กันซ้ำแล้ว
-      let clean = (regAddress && regAddress.value) ? String(regAddress.value) : "";
+      let clean = (regAddress && regAddress.value) ? String(regAddress.value) : ""; //แก้ตรงกรอกให้รองรับ / ด้วย
       clean = clean.replace(/(แขวง|ตำบล|เขต|อำเภอ|จังหวัด)/gi, "")
-                   .replace(/[\/,;()]/g, " ")
-                   .replace(/\s{2,}/g, " ")
-                   .trim();
+             .replace(/[,;()]/g, " ")   // <-- ไม่ลบ /
+             .replace(/\s{2,}/g, " ")
+             .trim();
 
       if (clean) parts.push(clean);
 
