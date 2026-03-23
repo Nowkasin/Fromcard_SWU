@@ -124,10 +124,16 @@
             {{ form.nationality }}
           </div>
 
-          <div>
-            <!-- เพิ่มหมู่โลหิต -->
-            <label class="block text-sm font-medium">{% trans "หมู่โลหิต" %}</label> 
-            {{ form.blood_type }}
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium">{% trans "หมู่โลหิต" %}</label>
+              {{ form.blood_type }}
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium">{% trans "หมู่เลือดพิเศษ" %}</label>
+              {{ form.rh_factor }}
+            </div>
           </div>
         </div>
 

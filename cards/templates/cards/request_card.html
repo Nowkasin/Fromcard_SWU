@@ -118,14 +118,20 @@
             {{ form.nationality }}
           </div>
 
-          <div>
-             <!-- เพิ่มหมู่โลหิต -->
-            <label class="block text-sm font-medium">{% trans "หมู่โลหิต" %}</label>
-            {{form.blood_type}}
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium"> {% trans "หมู่โลหิต" %}</label>
+              {{ form.blood_type }}
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium">{% trans "หมู่เลือดพิเศษ" %}</label>
+              {{ form.rh_factor }}
+            </div>
           </div>
         </div>
 
-       <div class="mt-4">
+        <div class="mt-4">
           <label class="block text-sm font-medium">{% trans "ที่อยู่ตามทะเบียนบ้าน" %}</label>
           <input type="text" name="reg_address" class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
             value="{{ form.reg_address.value|default:'' }}">
@@ -350,9 +356,11 @@
       </section>
 
       <div class="flex gap-3 no-print">
-        <button type="button" onclick="window.print()" class="px-4 py-2 bg-sky-600 text-white rounded">{% trans "พิมพ์แบบฟอร์ม" %}</button>
+        <button type="button" onclick="window.print()" class="px-4 py-2 bg-sky-600 text-white rounded">{% trans
+          "พิมพ์แบบฟอร์ม" %}</button>
         <button id="resetBtn" type="button" class="px-4 py-2 border rounded">{% trans "รีเซ็ต" %}</button>
-        <button id="submitBtn" type="submit" class="px-4 py-2 bg-green-600 text-white rounded">{% trans "ส่ง (ตัวอย่าง)" %}</button>
+        <button id="submitBtn" type="submit" class="px-4 py-2 bg-green-600 text-white rounded">{% trans "ส่ง (ตัวอย่าง)"
+          %}</button>
       </div>
     </form>
 
@@ -361,7 +369,8 @@
       <ul class="list-disc pl-5 space-y-1">
         <li>{% trans "ให้ติดคำข้อความที่ไม่ต้องการออกแล้วตัดเครื่องหมาย / ลงใน ○ หน้าข้อความที่ใช้" %}</li>
         <li>{% trans "ให้ลงคำนำตามกฎหมายและระเบียบของทางราชการ เช่น นาย/นาง/นางสาว/ยศ เป็นต้น" %}</li>
-        <li>{% trans "สามารถใช้ได้อย่างรวดเร็วผ่านระบบออนไลน์ โดยการ Login ด้วยรหัสบัตรใช้ของมหาวิทยาลัยแล้วเลือกเมนูขอมีบัตรใหม่ได้" %}</li>
+        <li>{% trans "สามารถใช้ได้อย่างรวดเร็วผ่านระบบออนไลน์ โดยการ Login
+          ด้วยรหัสบัตรใช้ของมหาวิทยาลัยแล้วเลือกเมนูขอมีบัตรใหม่ได้" %}</li>
       </ul>
     </footer>
 

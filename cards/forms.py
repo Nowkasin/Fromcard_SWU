@@ -42,10 +42,15 @@ NATIONALITY_CHOICES = [
 ]
 
 BLOOD_CHOICES = [
-    ('', _('-- เลือกหมู่โลหิต --')),
+    ('', _('-- หมู่โลหิต --')),
     ('A','A'),('B','B'),('AB','AB'),('O','O'),('ไม่ระบุ',_('ไม่ระบุ')),
 ]
 
+RH_CHOICES = [
+    ('', _('-- เลือก Rh --')),
+    ('+', 'Rh+'),
+    ('-', 'Rh-'),
+]
 
 class PersonnelCardRequestForm(forms.ModelForm):
 
@@ -103,11 +108,18 @@ class PersonnelCardRequestForm(forms.ModelForm):
             'class': 'mt-1 w-full border-b border-slate-700 py-1 bg-white'
         })
     )
+    rh_factor = forms.ChoiceField(
+        choices=RH_CHOICES,
+        required=False,  # 🔥 สำคัญ
+        widget=forms.Select(attrs={
+            "class": "mt-1 w-full border-b border-slate-700 py-1 bg-white"
+        })
+    )
 
     class Meta:
         model = PersonnelCardRequest
         fields = [
-            'fullname','name','birth_date','nationality','blood_type',
+            'fullname','name','birth_date','nationality','blood_type','rh_factor',
             'reg_address','reg_district','phone','id_card',
             'use_reg_address','contact_address',
             'department','old_card_number','evidence',

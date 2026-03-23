@@ -10,6 +10,7 @@ class PersonnelCardRequest(models.Model):
 
     nationality = models.CharField("สัญชาติ", max_length=100, blank=True)
     blood_type = models.CharField("หมู่โลหิต", max_length=10, blank=True)
+    rh_factor = models.CharField(max_length=1, blank=True, null=True)
 
     # ที่อยู่ / เบอร์ / บัตรประชาชน
     reg_address = models.TextField("ที่อยู่ตามทะเบียนบ้าน", blank=True)

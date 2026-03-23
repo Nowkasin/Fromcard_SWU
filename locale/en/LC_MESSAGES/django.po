@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-18 11:39+0700\n"
+"POT-Creation-Date: 2026-03-23 15:38+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,14 +59,20 @@ msgid "อื่นๆ"
 msgstr "Other"
 
 #: cards/forms.py:45
-msgid "-- เลือกหมู่โลหิต --"
+msgid "-- หมู่โลหิต --"
 msgstr "-- Select blood group --"
 
 #: cards/forms.py:46
 msgid "ไม่ระบุ"
 msgstr "Unknow"
 
-#: cards/forms.py:144
+#: cards/forms.py:50
+#, fuzzy
+#| msgid "-- เลือกสัญชาติ --"
+msgid "-- เลือก Rh --"
+msgstr "-- Select Nationality --"
+
+#: cards/forms.py:156
 #, fuzzy
 #| msgid "หมายเลขบัตรประจำตัวประชาชน/พาสปอร์ต"
 msgid "หมายเลขบัตรประชาชนต้องมี 13 หลัก"
@@ -81,9 +87,9 @@ msgid "คำขอมีบัตรประจำตัว หรือขอ
 msgstr "Request for Personnel ID Card"
 
 #: cards/templates/cards/Gov_card.html:31
-
 msgid "ตามพระราชบัญญัติบัตรประจำตัวเจ้าหน้าที่ของรัฐ พ.ศ. 2542"
-msgstr "According to the Government Official Identity Card Act, B.E. 2542 (1999)."
+msgstr ""
+"According to the Government Official Identity Card Act, B.E. 2542 (1999)."
 
 #: cards/templates/cards/Gov_card.html:40
 #: cards/templates/cards/request_card.html:37
@@ -130,211 +136,215 @@ msgstr ""
 msgid "สัญชาติ"
 msgstr "Nationality"
 
-#: cards/templates/cards/Gov_card.html:128
-#: cards/templates/cards/request_card.html:122
+#: cards/templates/cards/Gov_card.html:129
+#: cards/templates/cards/request_card.html:123
 msgid "หมู่โลหิต"
 msgstr "Blood group"
 
 #: cards/templates/cards/Gov_card.html:134
 #: cards/templates/cards/request_card.html:128
+
+msgid "หมู่เลือดพิเศษ"
+msgstr "Special Blood"
+
+#: cards/templates/cards/Gov_card.html:141
+#: cards/templates/cards/request_card.html:135
 msgid "ที่อยู่ตามทะเบียนบ้าน"
 msgstr "Address according to the house registration"
 
-#: cards/templates/cards/Gov_card.html:144
-#: cards/templates/cards/request_card.html:138
+#: cards/templates/cards/Gov_card.html:151
+#: cards/templates/cards/request_card.html:145
 msgid "แขวง / ตำบล"
 msgstr "Sub-district"
 
-#: cards/templates/cards/Gov_card.html:151
-#: cards/templates/cards/request_card.html:145
+#: cards/templates/cards/Gov_card.html:158
+#: cards/templates/cards/request_card.html:152
 msgid "เขต / อำเภอ"
 msgstr "District"
 
-#: cards/templates/cards/Gov_card.html:158
-#: cards/templates/cards/request_card.html:152
+#: cards/templates/cards/Gov_card.html:165
+#: cards/templates/cards/request_card.html:159
 msgid "จังหวัด"
 msgstr "Province"
 
-#: cards/templates/cards/Gov_card.html:165
-#: cards/templates/cards/request_card.html:159
+#: cards/templates/cards/Gov_card.html:172
+#: cards/templates/cards/request_card.html:166
 msgid "รหัสไปรษณีย์"
 msgstr "Passcode"
 
-#: cards/templates/cards/Gov_card.html:175
-#: cards/templates/cards/request_card.html:169
+#: cards/templates/cards/Gov_card.html:182
+#: cards/templates/cards/request_card.html:176
 msgid "โทรศัพท์"
 msgstr "Phone"
 
-#: cards/templates/cards/Gov_card.html:183
+#: cards/templates/cards/Gov_card.html:190
+#: cards/templates/cards/request_card.html:184
 msgid "หมายเลขบัตรประจำตัวประชาชน / พาสปอร์ต"
 msgstr "ID card/passport number"
 
-#: cards/templates/cards/Gov_card.html:194
-#: cards/templates/cards/request_card.html:188
+#: cards/templates/cards/Gov_card.html:201
+#: cards/templates/cards/request_card.html:195
 msgid "ที่อยู่ที่สามารถติดต่อได้"
 msgstr "Contact address"
 
-#: cards/templates/cards/Gov_card.html:198
+#: cards/templates/cards/Gov_card.html:205
 msgid "ติ๊กใช้ข้อมูลตามที่อยู่ตามทะเบียนบ้าน"
 msgstr ""
 "Uses information based on the address according to the house registration."
 
-#: cards/templates/cards/Gov_card.html:202
+#: cards/templates/cards/Gov_card.html:209
+#: cards/templates/cards/request_card.html:203
 msgid "ที่อยู่ที่สามารถติดต่อได้..."
 msgstr "Contact address"
 
-#: cards/templates/cards/Gov_card.html:212
-
+#: cards/templates/cards/Gov_card.html:219
 msgid "เจ้าหน้าที่ของรัฐ / ประเภท"
 msgstr "Temporary Foreign Workers"
 
-#: cards/templates/cards/Gov_card.html:215
+#: cards/templates/cards/Gov_card.html:222
 #, fuzzy
 #| msgid "รับราชการ/ปฏิบัติงาน/เคยสังกัด/ส่วนงาน"
 msgid "เช่น ข้าราชการ / พนักงานมหาวิทยาลัย / ลูกจ้างชั่วคราว"
 msgstr "Government Service/Operation/Former Affiliation/Division"
 
-#: cards/templates/cards/Gov_card.html:222
+#: cards/templates/cards/Gov_card.html:229
 msgid "รับราชการ/ปฏิบัติงาน/เคยสังกัด"
 msgstr "Government Service/Division"
 
-#: cards/templates/cards/Gov_card.html:228
+#: cards/templates/cards/Gov_card.html:235
 msgid "แผนก/งาน"
 msgstr "Department/Job"
 
-#: cards/templates/cards/Gov_card.html:234
+#: cards/templates/cards/Gov_card.html:241
 msgid "ฝ่าย/ส่วน"
 msgstr "Section"
 
-#: cards/templates/cards/Gov_card.html:243
+#: cards/templates/cards/Gov_card.html:250
 msgid "กอง/สำนัก"
 msgstr "Division/Office"
 
-#: cards/templates/cards/Gov_card.html:249
+#: cards/templates/cards/Gov_card.html:256
 msgid "กรม/เทศบาล/องค์การ"
 msgstr "Organization"
 
-#: cards/templates/cards/Gov_card.html:255
+#: cards/templates/cards/Gov_card.html:262
 msgid "กระทรวง/ทบวง"
 msgstr "Ministry"
 
-#: cards/templates/cards/Gov_card.html:264
+#: cards/templates/cards/Gov_card.html:271
 msgid "ตำแหน่ง"
 msgstr "Position"
 
-#: cards/templates/cards/Gov_card.html:270
+#: cards/templates/cards/Gov_card.html:277
 msgid "ระดับ / ยศ"
 msgstr "Rank"
 
-#: cards/templates/cards/Gov_card.html:279
+#: cards/templates/cards/Gov_card.html:286
 #, fuzzy
 #| msgid "หมายเลขบัตรประจำตัวประชาชน/พาสปอร์ต"
 msgid "มีความประสงค์ขอมีบัตรประจำตัวเจ้าหน้าที่ของรัฐ"
 msgstr "ID card/passport number"
 
-#: cards/templates/cards/Gov_card.html:294
-#: cards/templates/cards/request_card.html:253
+#: cards/templates/cards/Gov_card.html:301
+#: cards/templates/cards/request_card.html:260
 msgid "กรณี"
 msgstr "Case"
 
-#: cards/templates/cards/Gov_card.html:299
-#: cards/templates/cards/request_card.html:258
+#: cards/templates/cards/Gov_card.html:306
+#: cards/templates/cards/request_card.html:265
 msgid "ขอมีบัตรครั้งแรก"
 msgstr "Request for a card for the first time"
 
-#: cards/templates/cards/Gov_card.html:304
-#: cards/templates/cards/Gov_card.html:340
-#: cards/templates/cards/request_card.html:266
-#: cards/templates/cards/request_card.html:311
+#: cards/templates/cards/Gov_card.html:311
+#: cards/templates/cards/Gov_card.html:347
+#: cards/templates/cards/request_card.html:273
+#: cards/templates/cards/request_card.html:318
 msgid "ขอมีบัตรใหม่เนื่องจาก"
 msgstr "New card because"
 
-#: cards/templates/cards/Gov_card.html:309
-#: cards/templates/cards/request_card.html:273
+#: cards/templates/cards/Gov_card.html:316
+#: cards/templates/cards/request_card.html:280
 msgid "บัตรหมดอายุ"
 msgstr "Expired"
 
-#: cards/templates/cards/Gov_card.html:314
-#: cards/templates/cards/request_card.html:278
+#: cards/templates/cards/Gov_card.html:321
+#: cards/templates/cards/request_card.html:285
 msgid "บัตรสูญหายหรือถูกทำลาย"
 msgstr "Lost or destroyed cards"
 
-#: cards/templates/cards/Gov_card.html:319
-#: cards/templates/cards/request_card.html:283
+#: cards/templates/cards/Gov_card.html:326
+#: cards/templates/cards/request_card.html:290
 msgid "บัตรชำรุด"
 msgstr "Defective card"
 
-#: cards/templates/cards/Gov_card.html:325
-#: cards/templates/cards/request_card.html:291
+#: cards/templates/cards/Gov_card.html:332
+#: cards/templates/cards/request_card.html:298
 msgid "หมายเลขบัตรเดิม"
 msgstr "Original card number"
 
-#: cards/templates/cards/Gov_card.html:332
-#: cards/templates/cards/request_card.html:298
+#: cards/templates/cards/Gov_card.html:339
+#: cards/templates/cards/request_card.html:305
 msgid "หลักฐานประกอบการขอมีบัตร"
 msgstr "Supporting documents for applying for a card"
 
-#: cards/templates/cards/Gov_card.html:345
-#: cards/templates/cards/request_card.html:318
+#: cards/templates/cards/Gov_card.html:352
+#: cards/templates/cards/request_card.html:325
 msgid "เปลี่ยนตำแหน่ง/เปลี่ยนระดับ/เลื่อนยศ"
 msgstr "Change position/change level/promote"
 
-#: cards/templates/cards/Gov_card.html:350
-#: cards/templates/cards/request_card.html:323
+#: cards/templates/cards/Gov_card.html:357
+#: cards/templates/cards/request_card.html:330
 msgid "เปลี่ยนชื่อ"
 msgstr "Change name"
 
-#: cards/templates/cards/Gov_card.html:355
-#: cards/templates/cards/request_card.html:328
+#: cards/templates/cards/Gov_card.html:362
+#: cards/templates/cards/request_card.html:335
 msgid "เปลี่ยนนามสกุล"
 msgstr "Change Surname"
 
-#: cards/templates/cards/Gov_card.html:360
-#: cards/templates/cards/request_card.html:333
+#: cards/templates/cards/Gov_card.html:367
+#: cards/templates/cards/request_card.html:340
 msgid "เปลี่ยนคำนำหน้าและชื่อสกุล"
 msgstr "Change name and surname"
 
-#: cards/templates/cards/Gov_card.html:370
-#: cards/templates/cards/request_card.html:346
+#: cards/templates/cards/Gov_card.html:377
+#: cards/templates/cards/request_card.html:353
 msgid "(ลงชื่อ)"
 msgstr "(Sign)"
 
-#: cards/templates/cards/Gov_card.html:378
-#: cards/templates/cards/request_card.html:352
+#: cards/templates/cards/Gov_card.html:385
 msgid "พิมพ์แบบฟอร์ม"
 msgstr "Print the form"
 
-#: cards/templates/cards/Gov_card.html:379
-#: cards/templates/cards/request_card.html:353
+#: cards/templates/cards/Gov_card.html:386
+#: cards/templates/cards/request_card.html:361
 msgid "รีเซ็ต"
 msgstr "Reset form"
 
-#: cards/templates/cards/Gov_card.html:380
-#: cards/templates/cards/request_card.html:354
+#: cards/templates/cards/Gov_card.html:387
 msgid "ส่ง (ตัวอย่าง)"
 msgstr "Send (Example)"
 
-#: cards/templates/cards/Gov_card.html:385
-#: cards/templates/cards/request_card.html:359
+#: cards/templates/cards/Gov_card.html:392
+#: cards/templates/cards/request_card.html:368
 msgid "หมายเหตุ"
 msgstr "Note"
 
-#: cards/templates/cards/Gov_card.html:387
-#: cards/templates/cards/request_card.html:361
+#: cards/templates/cards/Gov_card.html:394
+#: cards/templates/cards/request_card.html:370
 msgid "ให้ติดคำข้อความที่ไม่ต้องการออกแล้วตัดเครื่องหมาย / ลงใน ○ หน้าข้อความที่ใช้"
 msgstr ""
 "Mark the unwanted text and then put a / in the ○ in front of the text to be "
 "used."
 
-#: cards/templates/cards/Gov_card.html:388
-#: cards/templates/cards/request_card.html:362
+#: cards/templates/cards/Gov_card.html:395
+#: cards/templates/cards/request_card.html:371
 msgid "ให้ลงคำนำตามกฎหมายและระเบียบของทางราชการ เช่น นาย/นาง/นางสาว/ยศ เป็นต้น"
 msgstr ""
 "Include the title according to the law and government regulations, such as "
 "Mr./Mrs./Ms./Rank, etc."
 
-#: cards/templates/cards/Gov_card.html:389
-#: cards/templates/cards/request_card.html:363
+#: cards/templates/cards/Gov_card.html:396
 msgid ""
 "สามารถใช้ได้อย่างรวดเร็วผ่านระบบออนไลน์ โดยการ Login "
 "ด้วยรหัสบัตรใช้ของมหาวิทยาลัยแล้วเลือกเมนูขอมีบัตรใหม่ได้"
@@ -346,42 +356,42 @@ msgstr ""
 msgid "คำขอมีบัตรประจำตัวบุคลากร"
 msgstr "Request for Personnel ID Card"
 
-#: cards/templates/cards/request_card.html:192
+#: cards/templates/cards/request_card.html:199
 #, fuzzy
 #| msgid "ติ๊กใช้ข้อมูลตามที่อยู่ตามทะเบียนบ้าน"
 msgid "ใช้ข้อมูลตามที่อยู่ตามทะเบียนบ้าน"
 msgstr ""
 "Uses information based on the address according to the house registration."
 
-#: cards/templates/cards/request_card.html:203
+#: cards/templates/cards/request_card.html:210
 msgid "ประเภทบุคลากร"
 msgstr "Personnel Type"
 
-#: cards/templates/cards/request_card.html:209
+#: cards/templates/cards/request_card.html:216
 msgid "พนักงานมหาวิทยาลัย"
 msgstr "University Officer"
 
-#: cards/templates/cards/request_card.html:214
+#: cards/templates/cards/request_card.html:221
 msgid "ลูกจ้างมหาวิทยาลัย"
 msgstr "University Employees"
 
-#: cards/templates/cards/request_card.html:219
+#: cards/templates/cards/request_card.html:226
 msgid "ลูกจ้างชั่วคราวชาวต่างประเทศ"
 msgstr "Temporary Foreign Workers"
 
-#: cards/templates/cards/request_card.html:224
+#: cards/templates/cards/request_card.html:231
 msgid "ข้าราชการ"
 msgstr "Civil servants"
 
-#: cards/templates/cards/request_card.html:229
+#: cards/templates/cards/request_card.html:236
 msgid "ลูกจ้างประจำ"
 msgstr "Full-time employees"
 
-#: cards/templates/cards/request_card.html:234
+#: cards/templates/cards/request_card.html:241
 msgid "ข้าราชการบำนาญ"
 msgstr "Pension Civil Servants"
 
-#: cards/templates/cards/request_card.html:241
+#: cards/templates/cards/request_card.html:248
 msgid "รับราชการ/ปฏิบัติงาน/เคยสังกัด/ส่วนงาน"
 msgstr "Government Service/Operation/Former Affiliation/Division"
 
