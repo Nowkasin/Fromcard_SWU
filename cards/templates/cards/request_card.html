@@ -2,7 +2,6 @@
 {% load i18n %}
 <!doctype html>
 <html lang="th">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -10,20 +9,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static 'cards/css/styles.css' %}">
 </head>
-
 <body class="bg-slate-50 antialiased">
   <div class="absolute top-4 right-4 no-print">
     <form action="{% url 'set_language' %}" method="post">
       {% csrf_token %}
-
       <button type="submit" name="language" value="th" class="px-3 py-1 border rounded text-sm">
         ไทย
       </button>
-
       <button type="submit" name="language" value="en" class="px-3 py-1 border rounded text-sm">
         EN
       </button>
-
     </form>
   </div>
   <div class="page max-w-4xl mx-auto bg-white p-6 rounded shadow my-8">
@@ -31,7 +26,6 @@
       <h1 class="text-2xl font-semibold">{% trans "คำขอมีบัตรประจำตัวบุคลากร" %}</h1>
       <h2 class="text-lg">{% trans "มหาวิทยาลัยศรีนครินทรวิโรฒ" %}</h2>
     </header>
-
     <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div>
         <label class="block text-sm font-medium">{% trans "เขียนที่" %}</label>
@@ -51,7 +45,6 @@
         <input id="todayISO" type="hidden" value="{{ today_iso }}" />
       </div>
     </section>
-
     <form id="cardForm" method="post" novalidate>
       {% csrf_token %}
       <section class="border border-slate-300 p-4 rounded mb-6">
@@ -75,7 +68,7 @@
               class="mt-1 w-full border border-slate-300 rounded px-3 py-2 bg-white cursor-pointer"
               placeholder="คลิกเพื่อเลือกวันเกิด" />
             <input id="birth_date" name="birth_date" type="hidden" value="{{ form.birth_date.value|default:'' }}" />
-            <!-- datepicker popup -->
+            
             <div id="dp" class="hidden absolute z-50 mt-2 bg-white rounded dp-popup w-80 p-3">
               <div class="flex items-center justify-between mb-2">
                 <div id="dpTitle" class="text-sm font-medium">เลือกปี (พ.ศ.)</div>
@@ -138,7 +131,7 @@
         </div>
 
         <div class="mt-4">
-          <!-- address fields -->
+
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
             <div>
@@ -170,7 +163,7 @@
             </div>
 
           </div>
-          <!-- phone + id card -->
+          
           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium">{% trans "โทรศัพท์" %}</label>
@@ -241,6 +234,10 @@
             {% trans "ข้าราชการบำนาญ" %}
           </label>
 
+          <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="staff_type" value="retired" class="w-4 h-4">
+            {% trans "ผู้เกษียณอายุ" %}
+          </label>
         </div>
 
         <div class="mt-3">
@@ -259,9 +256,10 @@
 
         <label class="block text-sm font-medium mb-2">{% trans "กรณี" %}</label>
 
-        <div class="mb-3">
+        <!-- บล็อกไว้ไม่ให้เลือก -->
+        <div class="mb-3 opacity-50 pointer-events-none">
           <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="case_type" value="first_card" class="w-4 h-4">
+            <input type="checkbox" checked class="w-4 h-4">
             {% trans "ขอมีบัตรครั้งแรก" %}
           </label>
         </div>
@@ -341,35 +339,45 @@
             </label>
 
           </div>
-
         </div>
-
       </section>
-      <!-- (ย่อส่วนอื่น ๆ ให้สั้นลงได้) -->
-
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end mb-6">
+      
         <div class="text-center">
-          <div class="sig-line mx-8"></div>
-          <div class="mt-2 text-sm">{% trans "(ลงชื่อ)" %} ........................................</div>
-          <div class="text-sm mt-1">(...........................................................)</div>
+      
+          <!-- preview ลายเซ็น -->
+          <div class="mx-auto w-64 h-24 border-b border-black flex items-center justify-center overflow-hidden">
+            <img id="signaturePreview" class="max-h-full hidden" />
+            <span id="placeholderText" class="text-gray-400 text-sm">
+              {% trans "ยังไม่ได้เลือกลายเซ็น" %}
+            </span>
+          </div>
+          <!-- input file -->
+          <input type="file" name="signature" id="signatureInput" accept="image/*" class="mt-2 text-sm mx-auto block" />
+          <!-- ชื่อ -->
+          <div class="mt-2 text-sm">
+            {% trans "(ลงชื่อ)" %} ........................................
+          </div>
+          <div class="text-sm mt-1">
+            (...........................................................)
+          </div>
         </div>
       </section>
 
       <div class="flex gap-3 no-print">
-        <button type="button" onclick="window.print()" class="px-4 py-2 bg-sky-600 text-white rounded">
-          {% trans "พิมพ์แบบฟอร์ม" %}</button>
-        <button id="resetBtn" type="button" class="px-4 py-2 border rounded">{% trans "รีเซ็ต" %}</button>
-        <button id="submitBtn" type="submit" class="px-4 py-2 bg-green-600 text-white rounded">{% trans "ส่ง (ตัวอย่าง)" %}</button>
+        <button id="resetBtn" type="button" class="px-4 py-2 border rounded">
+          {% trans "รีเซ็ต" %}
+        </button> 
+        <button id="submitBtn" type="submit" class="px-4 py-2 bg-green-600 text-white rounded">
+          {% trans "ส่งแบบฟอร์ม" %}
+        </button>
       </div>
     </form>
 
     <footer class="text-sm border-t pt-3 mt-6">
       <p class="font-semibold mb-2">{% trans "หมายเหตุ" %}</p>
       <ul class="list-disc pl-5 space-y-1">
-        <li>{% trans "ให้ติดคำข้อความที่ไม่ต้องการออกแล้วตัดเครื่องหมาย / ลงใน ○ หน้าข้อความที่ใช้" %}</li>
-        <li>{% trans "ให้ลงคำนำตามกฎหมายและระเบียบของทางราชการ เช่น นาย/นาง/นางสาว/ยศ เป็นต้น" %}</li>
-        <li>{% trans "สามารถใช้ได้อย่างรวดเร็วผ่านระบบออนไลน์ โดยการ Login
-          ด้วยรหัสบัตรใช้ของมหาวิทยาลัยแล้วเลือกเมนูขอมีบัตรใหม่ได้" %}</li>
+        <li>{% trans "กรณีเปลี่ยนแปลงบัตรประจำตัวใหม่ สามารถใช้เว็บไซต์ http://card.op.swu.ac.th โดยการ Login ผ่านรหัสบัวศรีไอดีของมหาวิทยาลัยเพื่อยืนยันตัวตนได้" %}</li>
       </ul>
     </footer>
 

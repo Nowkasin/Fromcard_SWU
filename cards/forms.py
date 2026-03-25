@@ -9,6 +9,7 @@ STAFF_CHOICES = [
     ('civil_servant','ข้าราชการ'),
     ('permanent_employee','ลูกจ้างประจำ'),
     ('retired_civil_servant','ข้าราชการบำนาญ'),
+    ('retired', 'ผู้เกษียณอายุ'),
 ]
 
 NEW_REASON_CHOICES = [
