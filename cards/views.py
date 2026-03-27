@@ -1,88 +1,155 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, HttpResponse
 from django.contrib import messages
 from django.utils.translation import gettext as _
-from datetime import date
+from django.conf import settings
 
-from .forms import PersonnelCardRequestForm
+from datetime import date
+import subprocess
+import os
+import tempfile
+
+from .forms import UniversityForm, GovForm
 from .models import PersonnelCardRequest, ThaiAddress
 
-def print_card_view(request, pk):
-    obj = get_object_or_404(PersonnelCardRequest, pk=pk)
-    # เตรียมเลขบัตรแบ่งเป็น list 13 ช่อง
-    id_digits = list(obj.id_card or '')
-    # pad ให้ยาว 13
-    id_digits += [''] * (13 - len(id_digits))
-    context = {
-        'object': obj,
-        'id_digits': id_digits,
-        # ถ้าต้องการวันที่ปัจจุบัน (เช่น header)
-        'today_day': ...,
-        'today_month_name': ...,
-        'today_be_year': ...,
-    }
-    return render(request, 'cards/request_card_print.html', context)
+
+# 🟦 FORM VIEW (มหาลัย)
 
 def request_card_view(request):
     if request.method == 'POST':
-        form = PersonnelCardRequestForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("บันทึกเรียบร้อย (ตัวอย่าง)"))
-            return redirect(reverse('cards:request_card'))
-        else:
-            messages.error(request, _("ข้อมูลไม่สมบูรณ์, กรุณาตรวจสอบ"))
-    else:
-        form = PersonnelCardRequestForm()
+        data = request.POST.copy()
 
-    today = date.today()
+        # FIX checkbox (JSONField)
+        for field in ['staff_types', 'case_types', 'new_reasons', 'change_reasons', 'evidence']:
+            data.setlist(field, request.POST.getlist(field))
 
-    months = [
-        _("มกราคม"), _("กุมภาพันธ์"), _("มีนาคม"), _("เมษายน"),
-        _("พฤษภาคม"), _("มิถุนายน"), _("กรกฎาคม"), _("สิงหาคม"),
-        _("กันยายน"), _("ตุลาคม"), _("พฤศจิกายน"), _("ธันวาคม")
-    ]
+        form = UniversityForm(data, request.FILES)
 
-    context = {
-        'form': form,
-        'today_iso': today.isoformat(),
-        'today_day': f"{today.day:02d}",
-        'today_month_name': months[today.month - 1],
-        'today_be_year': today.year + 543,
-    }
-
-    return render(request, 'cards/request_card.html', context)
-
-def gov_card_view(request):
-    """แสดง/บันทึกฟอร์มแบบ GOVCard (template: templates/cards/Gov_card.html)"""
-    if request.method == 'POST':
-        form = PersonnelCardRequestForm(request.POST)
         if form.is_valid():
             obj = form.save()
-            messages.success(request, _("บันทึกเรียบร้อย (ตัวอย่าง)"))
-            # redirect ไปที่หน้าเดียวกัน (หรือไปหน้า print หากต้องการ)
-            return redirect(reverse('cards:gov_card'))
+            return redirect('cards:export_pdf', pk=obj.pk)
         else:
-            messages.error(request, _("ข้อมูลไม่สมบูรณ์, กรุณาตรวจสอบ"))
+            print("❌ FORM ERROR:", form.errors)
+            messages.error(request, _("ข้อมูลไม่สมบูรณ์ กรุณาตรวจสอบ"))
     else:
-        form = PersonnelCardRequestForm()
+        form = UniversityForm()
 
     today = date.today()
+
     months = [
         _("มกราคม"), _("กุมภาพันธ์"), _("มีนาคม"), _("เมษายน"),
         _("พฤษภาคม"), _("มิถุนายน"), _("กรกฎาคม"), _("สิงหาคม"),
         _("กันยายน"), _("ตุลาคม"), _("พฤศจิกายน"), _("ธันวาคม")
     ]
 
-    context = {
+    return render(request, 'cards/request_card.html', {
         'form': form,
         'today_iso': today.isoformat(),
         'today_day': f"{today.day:02d}",
         'today_month_name': months[today.month - 1],
         'today_be_year': today.year + 543,
-    }
-    return render(request, 'cards/Gov_card.html', context)
+    })
+
+
+
+# 🟩 FORM VIEW (ราชการ)
+
+def gov_card_view(request):
+    if request.method == 'POST':
+        data = request.POST.copy()
+        data.setlist('staff_types', request.POST.getlist('staff_types'))
+
+        form = GovForm(data, request.FILES)
+
+        if form.is_valid():
+            obj = form.save()
+            return redirect('cards:export_pdf', pk=obj.pk)
+        else:
+            print("❌ GOV ERROR:", form.errors)
+            messages.error(request, _("ข้อมูลไม่สมบูรณ์"))
+    else:
+        form = GovForm()
+
+    today = date.today()
+
+    return render(request, 'cards/Gov_card.html', {
+        'form': form,
+        'today_day': f"{today.day:02d}",
+        'today_month_name': today.strftime('%B'),
+        'today_be_year': today.year + 543,
+    })
+
+
+
+# 🖨 PRINT VIEW (HTML)
+
+def print_card_view(request, pk):
+    obj = get_object_or_404(PersonnelCardRequest, pk=pk)
+
+    today = date.today()
+    months = [
+        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
+        "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
+        "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ]
+
+    id_digits = list(obj.id_card or '')
+    id_digits += [''] * (13 - len(id_digits))
+
+    return render(request, 'cards/request_card_print.html', {
+        'object': obj,
+        'id_digits': id_digits,
+        'today_day': f"{today.day:02d}",
+        'today_month_name': months[today.month - 1],
+        'today_be_year': today.year + 543,
+    })
+
+
+
+# 📄 EXPORT PDF (Puppeteer)
+
+def export_pdf_view(request, pk):
+    obj = get_object_or_404(PersonnelCardRequest, pk=pk)
+
+    url = request.build_absolute_uri(
+        reverse('cards:print_card', args=[pk])
+    )
+
+    print("🌐 PRINT URL:", url)
+
+    try:
+        # 🔥 ใช้ temp file (ไม่ต้องเก็บในเครื่อง)
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+            output_path = tmp.name
+
+        subprocess.run(
+            [
+                "node",
+                os.path.join(settings.BASE_DIR, "node", "generate_pdf.js"),
+                url,
+                output_path,
+            ],
+            check=True,
+        )
+
+    except subprocess.CalledProcessError as e:
+        print("❌ PDF ERROR:", e)
+        return JsonResponse({
+            "error": "PDF generation failed",
+            "detail": str(e)
+        }, status=500)
+
+    return FileResponse(
+        open(output_path, 'rb'),
+        content_type='application/pdf',
+        as_attachment=True,
+        filename=f'card_{pk}.pdf'
+    )
+
+
+
+# 📍 ADDRESS API
 
 def address_api(request):
     q = request.GET.get("q", "").strip()
@@ -94,14 +161,32 @@ def address_api(request):
         subdistrict__icontains=q
     )[:10]
 
-    data = []
-
-    for a in addresses:
-        data.append({
+    data = [
+        {
             "subdistrict": a.subdistrict,
             "district": a.district,
             "province": a.province,
             "zipcode": a.zipcode,
-        })
+        }
+        for a in addresses
+    ]
 
     return JsonResponse({"results": data})
+
+
+
+# 🧪 TEST PDF (ReportLab)
+
+def generate_pdf(request):
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="test.pdf"'
+
+    from reportlab.pdfgen import canvas
+
+    p = canvas.Canvas(response)
+    p.drawString(100, 750, "Hello PDF from Django 🔥")
+    p.drawString(100, 730, "This file is downloaded to your computer")
+    p.showPage()
+    p.save()
+
+    return response

@@ -199,7 +199,9 @@
   function closeDP() {
     if (dp) dp.classList.add("hidden");
   }
-
+const signatureInput = document.getElementById("signatureInput");
+const signaturePreview = document.getElementById("signaturePreview");
+const signaturePlaceholder = document.getElementById("placeholderText");
   function attachEvents() {
     if (birthDisplay) {
       birthDisplay.addEventListener("click", (e) => {
@@ -322,29 +324,43 @@ if (chk) {
     // reset button
     const resetBtn = $("resetBtn") || document.getElementById("resetBtn");
     if (resetBtn) {
-      resetBtn.addEventListener("click", () => {
-        const keep = [
-          "writtenAt",
-          "todayDay",
-          "todayMonth",
-          "todayYear",
-          "todayISO",
-        ];
-        document
-          .querySelectorAll(
-            "#cardForm input, #cardForm textarea, #cardForm select, #govCardForm input, #govCardForm textarea, #govCardForm select",
-          )
-          .forEach((el) => {
-            if (keep.includes(el.id)) return;
-            if (el.type === "checkbox") el.checked = false;
-            else if (el.type !== "hidden") el.value = "";
-          });
-        if (contact) {
-          contact.readOnly = false;
-          contact.classList.remove("bg-slate-100/40");
-        }
+  resetBtn.addEventListener("click", () => {
+    const keep = [
+      "writtenAt",
+      "todayDay",
+      "todayMonth",
+      "todayYear",
+      "todayISO",
+    ];
+
+    document
+      .querySelectorAll(
+        "#cardForm input, #cardForm textarea, #cardForm select, #govCardForm input, #govCardForm textarea, #govCardForm select",
+      )
+      .forEach((el) => {
+        if (keep.includes(el.id)) return;
+        if (el.type === "checkbox") el.checked = false;
+        else if (el.type !== "hidden") el.value = "";
       });
+
+    if (contact) {
+      contact.readOnly = false;
+      contact.classList.remove("bg-slate-100/40");
     }
+
+    // ✅ reset signature ต้องอยู่ในนี้
+    if (signatureInput) signatureInput.value = "";
+
+    if (signaturePreview) {
+      signaturePreview.src = "";
+      signaturePreview.classList.add("hidden");
+    }
+
+    if (signaturePlaceholder) {
+      signaturePlaceholder.classList.remove("hidden");
+    }
+  });
+}
 
     // form submit: ensure id_hidden joined
     const formEl = $("cardForm") || $("govCardForm");
@@ -359,6 +375,28 @@ if (chk) {
         // optionally add client-side validation here
       });
     }
+    
+if (signatureInput) {
+  signatureInput.addEventListener("change", function (e) {
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (ev) {
+        if (signaturePreview) {
+          signaturePreview.src = ev.target.result;
+          signaturePreview.classList.remove("hidden");
+        }
+        if (signaturePlaceholder) {
+          signaturePlaceholder.classList.add("hidden");
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
+  });
+}
   } // end attachEvents
 
   // Init
@@ -385,4 +423,44 @@ if (chk) {
       // console.error('CFCUnuversity.js init error', err);
     }
   });
+  // 🔥 EXPORT PDF
+// 🔥 EXPORT PDF
+const exportBtn = document.getElementById("exportPdfBtn");
+
+if (exportBtn) {
+  exportBtn.addEventListener("click", async function () {
+    const form =
+      document.getElementById("cardForm") ||
+      document.getElementById("govCardForm");
+
+    const pk =
+      form?.dataset.pk || exportBtn?.dataset.pk;
+
+    if (!pk) {
+      alert("❌ ไม่พบ ID (pk)");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/cards/export-pdf/${pk}/`);
+
+      if (!res.ok) throw new Error("PDF failed");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `card_${pk}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("❌ สร้าง PDF ไม่สำเร็จ");
+      console.error(err);
+    }
+  });
+}
 })(); // IIFE

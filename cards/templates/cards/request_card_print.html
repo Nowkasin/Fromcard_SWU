@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Print</title>
+
+<style>
+  body {
+    font-family: "TH Sarabun New", sans-serif;
+  }
+
+  .no-print {
+    margin-bottom: 20px;
+  }
+
+  @media print {
+    .no-print {
+      display: none;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="no-print">
+  <button onclick="window.print()">🖨 Print</button>
+
+  <a href="{% url 'cards:export_pdf' object.pk %}">
+    📄 Export PDF
+  </a>
+</div>
+
+<h2 style="text-align:center;">
+  คำขอมีบัตรประจำตัวบุคลากร
+</h2>
+
+<p>ชื่อ: {{ object.name }}</p>
+<p>วันเกิด: {{ object.birth_date }}</p>
+<p>ที่อยู่: {{ object.reg_address }}</p>
+
+<hr>
+
+<p>เลขบัตร:</p>
+<div>
+  {% for d in id_digits %}
+    <span style="display:inline-block; width:20px; border:1px solid #000; text-align:center;">
+      {{ d }}
+    </span>
+  {% endfor %}
+</div>
+
+</body>
+</html>
