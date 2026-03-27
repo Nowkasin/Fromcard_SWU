@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse, FileResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.conf import settings
@@ -15,12 +15,9 @@ from .models import PersonnelCardRequest, ThaiAddress
 
 
 # 🟦 FORM VIEW (มหาลัย)
-
 def request_card_view(request):
     if request.method == 'POST':
         data = request.POST.copy()
-
-        # FIX checkbox (JSONField)
         for field in ['staff_types', 'case_types', 'new_reasons', 'change_reasons', 'evidence']:
             data.setlist(field, request.POST.getlist(field))
 
@@ -36,7 +33,6 @@ def request_card_view(request):
         form = UniversityForm()
 
     today = date.today()
-
     months = [
         _("มกราคม"), _("กุมภาพันธ์"), _("มีนาคม"), _("เมษายน"),
         _("พฤษภาคม"), _("มิถุนายน"), _("กรกฎาคม"), _("สิงหาคม"),
@@ -52,14 +48,11 @@ def request_card_view(request):
     })
 
 
-
 # 🟩 FORM VIEW (ราชการ)
-
 def gov_card_view(request):
     if request.method == 'POST':
         data = request.POST.copy()
         data.setlist('staff_types', request.POST.getlist('staff_types'))
-
         form = GovForm(data, request.FILES)
 
         if form.is_valid():
@@ -81,9 +74,7 @@ def gov_card_view(request):
     })
 
 
-
 # 🖨 PRINT VIEW (HTML)
-
 def print_card_view(request, pk):
     obj = get_object_or_404(PersonnelCardRequest, pk=pk)
 
@@ -106,61 +97,69 @@ def print_card_view(request, pk):
     })
 
 
-
+# 📄 EXPORT PDF (Puppeteer) - พร้อมดาวน์โหลดทันที & log error
 # 📄 EXPORT PDF (Puppeteer)
-
 def export_pdf_view(request, pk):
     obj = get_object_or_404(PersonnelCardRequest, pk=pk)
 
+    # URL ของหน้าพิมพ์
     url = request.build_absolute_uri(
         reverse('cards:print_card', args=[pk])
     )
-
     print("🌐 PRINT URL:", url)
 
-    try:
-        # 🔥 ใช้ temp file (ไม่ต้องเก็บในเครื่อง)
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-            output_path = tmp.name
+    # Path ชั่วคราวในเครื่อง
+    output_path = os.path.join(os.path.dirname(__file__), f"card_{pk}.pdf")
 
+    try:
+        # เรียก Node + Puppeteer
         subprocess.run(
             [
                 "node",
-                os.path.join(settings.BASE_DIR, "node", "generate_pdf.js"),
+                os.path.join(settings.BASE_DIR, "cards", "static", "cards", "js", "generate_pdf.js"),
                 url,
                 output_path,
             ],
-            check=True,
+            capture_output=True,   # <-- นี่
+            text=True,             # <-- นี่
+            check=True
         )
 
+        # อ่านไฟล์ PDF เข้า memory
+        with open(output_path, "rb") as f:
+            pdf_bytes = f.read()
+
+        # ลบไฟล์ชั่วคราว
+        if os.path.exists(output_path):
+            os.remove(output_path)
+
+        # ส่ง PDF ให้ดาวน์โหลด
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="card_{pk}.pdf"'
+        return response
+
     except subprocess.CalledProcessError as e:
-        print("❌ PDF ERROR:", e)
+        print("❌ PDF generation failed:", e)
         return JsonResponse({
             "error": "PDF generation failed",
+            "detail": e.stderr  # <-- แสดง error log จาก Node
+        }, status=500)
+
+    except Exception as e:
+        print("❌ Unexpected error:", e)
+        return JsonResponse({
+            "error": "Unexpected error",
             "detail": str(e)
         }, status=500)
 
-    return FileResponse(
-        open(output_path, 'rb'),
-        content_type='application/pdf',
-        as_attachment=True,
-        filename=f'card_{pk}.pdf'
-    )
-
-
 
 # 📍 ADDRESS API
-
 def address_api(request):
     q = request.GET.get("q", "").strip()
-
     if not q:
         return JsonResponse({"results": []})
 
-    addresses = ThaiAddress.objects.filter(
-        subdistrict__icontains=q
-    )[:10]
-
+    addresses = ThaiAddress.objects.filter(subdistrict__icontains=q)[:10]
     data = [
         {
             "subdistrict": a.subdistrict,
@@ -170,18 +169,14 @@ def address_api(request):
         }
         for a in addresses
     ]
-
     return JsonResponse({"results": data})
 
 
-
 # 🧪 TEST PDF (ReportLab)
-
 def generate_pdf(request):
+    from reportlab.pdfgen import canvas
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="test.pdf"'
-
-    from reportlab.pdfgen import canvas
 
     p = canvas.Canvas(response)
     p.drawString(100, 750, "Hello PDF from Django 🔥")
