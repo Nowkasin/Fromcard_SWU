@@ -21,6 +21,11 @@ class BasePersonnelForm(forms.ModelForm):
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
+RH_CHOICES = [
+    ('', _('-- เลือก Rh --')),
+    ('+', 'Rh+'),
+    ('-', 'Rh-'),
+]
 
 # 🟦 University Form
 class UniversityForm(BasePersonnelForm):
@@ -126,6 +131,13 @@ class UniversityForm(BasePersonnelForm):
         choices=BLOOD_CHOICES,
         required=False,
         widget=forms.Select(attrs={'class': 'mt-1 w-full border-b border-slate-700 py-1'})
+    )
+    rh_factor = forms.ChoiceField(
+        choices=RH_CHOICES,
+        required=False,  # 🔥 สำคัญ
+        widget=forms.Select(attrs={
+            "class": "mt-1 w-full border-b border-slate-700 py-1 bg-white"
+        })
     )
 
     rh_factor = forms.ChoiceField(

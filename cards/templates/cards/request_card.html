@@ -16,8 +16,17 @@
   <div class="absolute top-4 right-4 no-print">
     <form action="{% url 'set_language' %}" method="post">
       {% csrf_token %}
+<<<<<<< HEAD
       <button type="submit" name="language" value="th" class="px-3 py-1 border rounded text-sm">ไทย</button>
       <button type="submit" name="language" value="en" class="px-3 py-1 border rounded text-sm">EN</button>
+=======
+      <button type="submit" name="language" value="th" class="px-3 py-1 border rounded text-sm">
+        ไทย
+      </button>
+      <button type="submit" name="language" value="en" class="px-3 py-1 border rounded text-sm">
+        EN
+      </button>
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
     </form>
   </div>
 
@@ -45,8 +54,12 @@
         <input id="todayISO" type="hidden" value="{{ today_iso }}" />
       </div>
     </section>
+<<<<<<< HEAD
 
     <form id="cardForm" method="post" enctype="multipart/form-data" novalidate>
+=======
+    <form id="cardForm" method="post" novalidate>
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
       {% csrf_token %}
 
       <section class="border border-slate-300 p-4 rounded mb-6">
@@ -70,8 +83,13 @@
               class="mt-1 w-full border border-slate-300 rounded px-3 py-2 bg-white cursor-pointer"
               placeholder="คลิกเพื่อเลือกวันเกิด" />
             <input id="birth_date" name="birth_date" type="hidden" value="{{ form.birth_date.value|default:'' }}" />
+<<<<<<< HEAD
 
             <div id="dp" class="hidden absolute z-50 mt-2 bg-white rounded dp-popup w-80 p-3 no-print">
+=======
+            
+            <div id="dp" class="hidden absolute z-50 mt-2 bg-white rounded dp-popup w-80 p-3">
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
               <div class="flex items-center justify-between mb-2">
                 <div id="dpTitle" class="text-sm font-medium">เลือกปี (พ.ศ.)</div>
                 <div id="dpStep" class="text-xs text-slate-500">ขั้นตอน 1/3</div>
@@ -109,9 +127,16 @@
 
           <div class="grid grid-cols-2 gap-4">
             <div>
+<<<<<<< HEAD
               <label class="block text-sm font-medium">{% trans "หมู่โลหิต" %}</label>
               {{ form.blood_type }}
             </div>
+=======
+              <label class="block text-sm font-medium"> {% trans "หมู่โลหิต" %}</label>
+              {{ form.blood_type }}
+            </div>
+
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
             <div>
               <label class="block text-sm font-medium">{% trans "หมู่เลือดพิเศษ" %}</label>
               {{ form.rh_factor }}
@@ -126,6 +151,10 @@
         </div>
 
         <div class="mt-4">
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label class="block text-sm font-medium">{% trans "แขวง / ตำบล" %}</label>
@@ -155,7 +184,11 @@
                 value="{{ form.zipcode.value|default:'' }}">
             </div>
           </div>
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium">{% trans "โทรศัพท์" %}</label>
@@ -222,7 +255,11 @@
           </label>
 
           <label class="inline-flex items-center gap-2">
+<<<<<<< HEAD
             <input type="checkbox" name="staff_types" value="retired" class="w-4 h-4">
+=======
+            <input type="checkbox" name="staff_type" value="retired" class="w-4 h-4">
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
             {% trans "ผู้เกษียณอายุ" %}
           </label>
         </div>
@@ -238,6 +275,10 @@
       <section class="border border-slate-300 p-4 rounded mb-6">
         <label class="block text-sm font-medium mb-2">{% trans "กรณี" %}</label>
 
+<<<<<<< HEAD
+=======
+        <!-- บล็อกไว้ไม่ให้เลือก -->
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
         <div class="mb-3 opacity-50 pointer-events-none">
           <label class="inline-flex items-center gap-2">
             <input type="checkbox" checked class="w-4 h-4">
@@ -308,19 +349,34 @@
           </div>
         </div>
       </section>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end mb-6">
+      
         <div class="text-center">
+<<<<<<< HEAD
+=======
+      
+          <!-- preview ลายเซ็น -->
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
           <div class="mx-auto w-64 h-24 border-b border-black flex items-center justify-center overflow-hidden">
             <img id="signaturePreview" class="max-h-full hidden" />
             <span id="placeholderText" class="text-gray-400 text-sm">
               {% trans "ยังไม่ได้เลือกลายเซ็น" %}
             </span>
           </div>
+<<<<<<< HEAD
 
           <input type="file" name="signature" id="signatureInput" accept="image/*"
             class="mt-2 text-sm mx-auto block no-print" />
 
+=======
+          <!-- input file -->
+          <input type="file" name="signature" id="signatureInput" accept="image/*" class="mt-2 text-sm mx-auto block" />
+          <!-- ชื่อ -->
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
           <div class="mt-2 text-sm">
             {% trans "(ลงชื่อ)" %} ........................................
           </div>
@@ -331,6 +387,7 @@
       </section>
 
       <div class="flex gap-3 no-print">
+<<<<<<< HEAD
         <button type="reset" class="px-4 py-2 border rounded">{% trans "รีเซ็ต" %}</button>
         <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">{% trans "ส่งแบบฟอร์ม" %}</button>
           {% if form.instance.pk %}
@@ -340,6 +397,24 @@
           {% endif %}
       </div>
     </form>
+=======
+        <button id="resetBtn" type="button" class="px-4 py-2 border rounded">
+          {% trans "รีเซ็ต" %}
+        </button> 
+        <button id="submitBtn" type="submit" class="px-4 py-2 bg-green-600 text-white rounded">
+          {% trans "ส่งแบบฟอร์ม" %}
+        </button>
+      </div>
+    </form>
+
+    <footer class="text-sm border-t pt-3 mt-6">
+      <p class="font-semibold mb-2">{% trans "หมายเหตุ" %}</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>{% trans "กรณีเปลี่ยนแปลงบัตรประจำตัวใหม่ สามารถใช้เว็บไซต์ http://card.op.swu.ac.th โดยการ Login ผ่านรหัสบัวศรีไอดีของมหาวิทยาลัยเพื่อยืนยันตัวตนได้" %}</li>
+      </ul>
+    </footer>
+
+>>>>>>> 7b3127086e82f2c452ea0aa717b3c8a687d55dbe
   </div>
 
   <!-- ไม่พิมพ์ -->
