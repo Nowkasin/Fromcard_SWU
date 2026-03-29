@@ -3,7 +3,8 @@ from django.db import models
 
 class PersonnelCardRequest(models.Model): 
     # ข้อมูลพื้นฐาน   
-    fullname = models.CharField("ชื่อ-สกุล", max_length=200, blank=True)
+    first_name = models.CharField(max_length=100, blank=True)
+    surname = models.CharField(max_length=100, blank=True)
     birth_date = models.DateField("วันเกิด", null=True, blank=True)
     nationality = models.CharField("สัญชาติ", max_length=100, blank=True)
     blood_type = models.CharField("หมู่โลหิต", max_length=10, blank=True)
@@ -46,7 +47,7 @@ class PersonnelCardRequest(models.Model):
     # system   
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return f"{self.fullname} ({self.created_at.date()})"
+        return f"{self.first_name} ({self.created_at.date()})"
 # Address master (ใช้ autocomplete)
 class ThaiAddress(models.Model):
     subdistrict = models.CharField(max_length=200)   # แขวง / ตำบล

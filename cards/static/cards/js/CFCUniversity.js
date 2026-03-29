@@ -1,6 +1,6 @@
 // static/cards/js/CFCUnuversity.js
 (function () {
-  // helpers
+  // ================= HELPERS =================
   const thaiMonths = [
     "มกราคม",
     "กุมภาพันธ์",
@@ -15,452 +15,409 @@
     "พฤศจิกายน",
     "ธันวาคม",
   ];
-  const config = { yearStartBE: 2400, yearEndOffset: 0 };
+
   const pad = (n) => String(n).padStart(2, "0");
   const beToGregorian = (be) => be - 543;
   const gregorianToBE = (g) => g + 543;
+  const $ = (id) => document.getElementById(id);
 
-  // Safe element getter
-  const $ = (id) => document.getElementById(id) || null;
-
-  // Today fields (use server-provided if present)
-  function setTodayFields() {
-    const now = new Date();
-    const day = pad(now.getDate());
-    const monthName = thaiMonths[now.getMonth()];
-    const beYear = now.getFullYear() + 543;
-
-    const todayDayEl =
-      $("todayDay") ||
-      $("today_day") ||
-      document.querySelector('[name="today_day"]');
-    const todayMonthEl =
-      $("todayMonth") ||
-      $("today_month") ||
-      document.querySelector('[name="today_month_name"]');
-    const todayYearEl =
-      $("todayYear") ||
-      $("today_year") ||
-      document.querySelector('[name="today_be_year"]');
-    const todayISO =
-      $("todayISO") || document.querySelector('[name="today_iso"]');
-
-    if (todayDayEl && !todayDayEl.value) todayDayEl.value = day;
-    if (todayMonthEl && !todayMonthEl.value) todayMonthEl.value = monthName;
-    if (todayYearEl && !todayYearEl.value) todayYearEl.value = beYear;
-    if (todayISO && !todayISO.value)
-      todayISO.value = now.toISOString().slice(0, 10);
-  }
-
-  /* Datepicker variables (DOM refs) */
+  // ================= DATE =================
   const birthDisplay = $("birthDisplay");
+  const birthDateHidden = $("birth_date");
+  const ageField = $("age");
+
+  function initBirthDatePicker() {
+  if (!birthDisplay || !birthDateHidden) return;
+
   const dp = $("dp");
   const yearView = $("yearView");
   const monthView = $("monthView");
   const dayView = $("dayView");
-  const dpTitle = $("dpTitle");
-  const dpStep = $("dpStep");
-  const monthYearLabel = $("monthYearLabel");
   const daysGrid = $("daysGrid");
-  const dpCancel = $("dpCancel");
-  const dpClear = $("dpClear");
-  const prevMonthBtn = $("prevMonth");
-  const nextMonthBtn = $("nextMonth");
-  const birthDateHidden = $("birth_date");
-  const ageField = $("age");
+  const monthYearLabel = $("monthYearLabel");
 
-  let step = 1;
-  let selectedBEYear = null;
-  let selectedMonthIndex = null;
-  let selectedDateISO = null;
-  const todayISO =
-    $("todayISO") && $("todayISO").value
-      ? $("todayISO").value
-      : new Date().toISOString().slice(0, 10);
+  const prevBtn = $("prevMonth");
+  const nextBtn = $("nextMonth");
+  const cancelBtn = $("dpCancel");
+  const clearBtn = $("dpClear");
 
-  function renderYears() {
-    if (!yearView) return;
+  if (!dp) return;
+
+  let selectedYear = null;
+  let selectedMonth = null;
+
+  // ================= OPEN =================
+  birthDisplay.addEventListener("click", () => {
+    dp.classList.remove("hidden");
+    showYearView();
+  });
+
+  // ================= CLOSE =================
+  cancelBtn?.addEventListener("click", () => {
+    dp.classList.add("hidden");
+  });
+
+  clearBtn?.addEventListener("click", () => {
+    birthDisplay.value = "";
+    birthDateHidden.value = "";
+    if (ageField) ageField.value = "";
+    dp.classList.add("hidden");
+  });
+
+  // ================= YEAR =================
+  function showYearView() {
     yearView.innerHTML = "";
-    const currentBE = gregorianToBE(new Date().getFullYear());
-    const endBE = currentBE + config.yearEndOffset;
-    for (let y = endBE; y >= config.yearStartBE; y--) {
+    yearView.classList.remove("hidden");
+    monthView.classList.add("hidden");
+    dayView.classList.add("hidden");
+
+    const currentYear = new Date().getFullYear() + 543;
+
+    for (let y = currentYear; y >= currentYear - 100; y--) {
       const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "px-2 py-2 border rounded text-sm hover:bg-slate-100";
       btn.textContent = y;
-      btn.dataset.be = y;
-      btn.addEventListener("click", () => {
-        selectedBEYear = Number(btn.dataset.be);
-        step = 2;
-        updateView();
-      });
+      btn.className = "border rounded p-1 hover:bg-blue-100";
+
+      btn.onclick = () => {
+        selectedYear = y;
+        showMonthView();
+      };
+
       yearView.appendChild(btn);
     }
   }
 
-  function renderMonths() {
-    if (!monthView) return;
+  // ================= MONTH =================
+  function showMonthView() {
     monthView.innerHTML = "";
-    thaiMonths.forEach((m, idx) => {
+    monthView.classList.remove("hidden");
+    yearView.classList.add("hidden");
+
+    thaiMonths.forEach((m, i) => {
       const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className =
-        "px-3 py-2 border rounded text-sm text-left hover:bg-slate-100";
       btn.textContent = m;
-      btn.dataset.month = idx;
-      btn.addEventListener("click", () => {
-        selectedMonthIndex = Number(btn.dataset.month);
-        step = 3;
-        updateView();
-      });
+      btn.className = "border rounded p-2 hover:bg-blue-100";
+
+      btn.onclick = () => {
+        selectedMonth = i;
+        showDayView();
+      };
+
       monthView.appendChild(btn);
     });
   }
 
-  function renderDays() {
-    if (!daysGrid || selectedBEYear === null || selectedMonthIndex === null)
-      return;
+  // ================= DAY =================
+  function showDayView() {
+    dayView.classList.remove("hidden");
+    monthView.classList.add("hidden");
+    renderCalendar();
+  }
+
+  function renderCalendar() {
     daysGrid.innerHTML = "";
-    const gYear = beToGregorian(selectedBEYear);
-    const month = selectedMonthIndex;
-    const firstDay = new Date(gYear, month, 1);
-    const lastDay = new Date(gYear, month + 1, 0);
-    const startWeekday = firstDay.getDay();
-    const totalDays = lastDay.getDate();
 
-    for (let i = 0; i < startWeekday; i++) {
-      const blank = document.createElement("div");
-      blank.className = "h-9";
-      daysGrid.appendChild(blank);
+    const gYear = beToGregorian(selectedYear);
+    const firstDay = new Date(gYear, selectedMonth, 1);
+    const lastDate = new Date(gYear, selectedMonth + 1, 0).getDate();
+
+    monthYearLabel.textContent =
+      thaiMonths[selectedMonth] + " " + selectedYear;
+
+    // ช่องว่างก่อนวันแรก
+    for (let i = 0; i < firstDay.getDay(); i++) {
+      const empty = document.createElement("div");
+      daysGrid.appendChild(empty);
     }
 
-    for (let d = 1; d <= totalDays; d++) {
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className =
-        "h-9 flex items-center justify-center rounded hover:bg-sky-100";
-      cell.textContent = d;
-      cell.dataset.day = d;
-      cell.addEventListener("click", () => {
-        const gY = gYear;
-        const gM = month + 1;
-        const gD = d;
-        selectedDateISO = `${gY}-${pad(gM)}-${pad(gD)}`;
-        if (birthDateHidden) birthDateHidden.value = selectedDateISO;
-        if (birthDisplay)
-          birthDisplay.value = `${pad(gD)}/${pad(gM)}/${selectedBEYear}`;
+    for (let d = 1; d <= lastDate; d++) {
+      const btn = document.createElement("button");
+      btn.textContent = d;
+      btn.className = "p-1 hover:bg-green-200 rounded";
+
+      btn.onclick = () => {
+        const iso =
+          gYear + "-" + pad(selectedMonth + 1) + "-" + pad(d);
+
+        birthDateHidden.value = iso;
+
+        birthDisplay.value =
+          d + " " + thaiMonths[selectedMonth] + " " + selectedYear;
+
         updateAge();
-        closeDP();
-      });
-      daysGrid.appendChild(cell);
-    }
+        dp.classList.add("hidden");
+      };
 
-    if (monthYearLabel)
-      monthYearLabel.textContent = `${thaiMonths[month]} ${selectedBEYear}`;
+      daysGrid.appendChild(btn);
+    }
+  }
+
+  // ================= NAV =================
+  prevBtn?.addEventListener("click", () => {
+    selectedMonth--;
+    if (selectedMonth < 0) {
+      selectedMonth = 11;
+      selectedYear--;
+    }
+    renderCalendar();
+  });
+
+  nextBtn?.addEventListener("click", () => {
+    selectedMonth++;
+    if (selectedMonth > 11) {
+      selectedMonth = 0;
+      selectedYear++;
+    }
+    renderCalendar();
+  });
+
+  // ================= LOAD OLD VALUE =================
+  if (birthDateHidden.value) {
+    const d = new Date(birthDateHidden.value);
+    const beYear = gregorianToBE(d.getFullYear());
+
+    birthDisplay.value =
+      d.getDate() +
+      " " +
+      thaiMonths[d.getMonth()] +
+      " " +
+      beYear;
+  }
+}
+  function setTodayFields() {
+    const now = new Date();
+    const day = pad(now.getDate());
+    const month = thaiMonths[now.getMonth()];
+    const year = now.getFullYear() + 543;
+
+    if ($("todayDay") && !$("todayDay").value) $("todayDay").value = day;
+    if ($("todayMonth") && !$("todayMonth").value)
+      $("todayMonth").value = month;
+    if ($("todayYear") && !$("todayYear").value) $("todayYear").value = year;
+    if ($("todayISO") && !$("todayISO").value)
+      $("todayISO").value = now.toISOString().slice(0, 10);
   }
 
   function updateAge() {
-    if (!birthDateHidden || !ageField) return;
-    if (!birthDateHidden.value) {
-      ageField.value = "";
-      return;
-    }
-    const ref = new Date(todayISO + "T00:00:00");
-    const b = new Date(birthDateHidden.value + "T00:00:00");
-    let age = ref.getFullYear() - b.getFullYear();
-    const m = ref.getMonth() - b.getMonth();
-    if (m < 0 || (m === 0 && ref.getDate() < b.getDate())) age--;
-    ageField.value = age >= 0 ? String(age) : "";
-  }
+    if (!birthDateHidden?.value || !ageField) return;
 
-  function updateView() {
-    if (yearView) yearView.classList.toggle("hidden", step !== 1);
-    if (monthView) monthView.classList.toggle("hidden", step !== 2);
-    if (dayView) dayView.classList.toggle("hidden", step !== 3);
+    const today = new Date();
+    const b = new Date(birthDateHidden.value);
 
-    if (step === 1 && dpTitle && dpStep) {
-      dpTitle.textContent = "เลือกปี (พ.ศ.)";
-      dpStep.textContent = "ขั้นตอน 1/3";
-    } else if (step === 2 && dpTitle && dpStep) {
-      dpTitle.textContent = `ปีที่เลือก: ${selectedBEYear}`;
-      dpStep.textContent = "ขั้นตอน 2/3 — เลือกเดือน";
-    } else if (step === 3 && dpTitle && dpStep) {
-      dpTitle.textContent = `ปี ${selectedBEYear} — เลือกวัน`;
-      dpStep.textContent = "ขั้นตอน 3/3";
-      renderDays();
-    }
-  }
+    let age = today.getFullYear() - b.getFullYear();
 
-  function openDP() {
-    if (dp) dp.classList.remove("hidden");
-    step = 1;
-    updateView();
-  }
-  function closeDP() {
-    if (dp) dp.classList.add("hidden");
-  }
-const signatureInput = document.getElementById("signatureInput");
-const signaturePreview = document.getElementById("signaturePreview");
-const signaturePlaceholder = document.getElementById("placeholderText");
-  function attachEvents() {
-    if (birthDisplay) {
-      birthDisplay.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openDP();
-      });
+    if (
+      today.getMonth() < b.getMonth() ||
+      (today.getMonth() === b.getMonth() && today.getDate() < b.getDate())
+    ) {
+      age--;
     }
 
-    if (dpCancel) dpCancel.addEventListener("click", () => closeDP());
-    if (dpClear)
-      dpClear.addEventListener("click", () => {
-        selectedBEYear = null;
-        selectedMonthIndex = null;
-        selectedDateISO = null;
-        if (birthDateHidden) birthDateHidden.value = "";
-        if (birthDisplay) birthDisplay.value = "";
-        if (ageField) ageField.value = "";
-        step = 1;
-        updateView();
+    ageField.value = age >= 0 ? age : "";
+  }
+
+  // ================= VALIDATION =================
+  function initValidation() {
+    const form = $("cardForm");
+    const errorBox = $("formErrorBox");
+    if (!form) return;
+
+    const showError = (msg) => {
+      if (!errorBox) return;
+      errorBox.textContent = msg;
+      errorBox.classList.remove("hidden");
+      errorBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+
+    const clearError = () => {
+      if (!errorBox) return;
+      errorBox.textContent = "";
+      errorBox.classList.add("hidden");
+    };
+
+    const isEmpty = (v) => !v || String(v).trim() === "";
+
+    const markInvalid = (el, invalid) => {
+      if (!el) return;
+      el.classList.toggle("border-red-500", invalid);
+      el.classList.toggle("ring-1", invalid);
+      el.classList.toggle("ring-red-400", invalid);
+    };
+
+    const requiredFields = [
+      "fullname",
+      "name",
+      "birthDisplay",
+      "idCard",
+      "contactAddress",
+      "subdistrict",
+      "district",
+      "province",
+      "zipcode",
+      "phone",
+      "writtenAt",
+      "department",
+    ];
+
+    form.addEventListener("submit", function (e) {
+      clearError();
+
+      // ✅ 1. birth date (สำคัญสุด)
+      if (!birthDateHidden.value) {
+        showError("กรุณาเลือกวันเกิด");
+        e.preventDefault();
+        return;
+      }
+
+      // ✅ 2. staff type
+      if (
+        document.querySelectorAll('[name="staff_types"]:checked').length === 0
+      ) {
+        showError("กรุณาเลือกประเภทบุคลากร");
+        e.preventDefault();
+        return;
+      }
+
+      // ✅ 3. reasons
+      if (
+        document.querySelectorAll('[name="new_reasons"]:checked').length ===
+          0 &&
+        document.querySelectorAll('[name="change_reasons"]:checked').length ===
+          0
+      ) {
+        showError("กรุณาเลือกเหตุผลอย่างน้อย 1 รายการ");
+        e.preventDefault();
+        return;
+      }
+
+      // ✅ 4. input ทั่วไป
+      let firstInvalid = null;
+
+      requiredFields.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+
+        const invalid = isEmpty(el.value);
+        markInvalid(el, invalid);
+
+        if (invalid && !firstInvalid) firstInvalid = el;
       });
-    if (prevMonthBtn)
-      prevMonthBtn.addEventListener("click", () => {
-        if (selectedMonthIndex === null) return;
-        selectedMonthIndex = (selectedMonthIndex - 1 + 12) % 12;
-        updateView();
-      });
-    if (nextMonthBtn)
-      nextMonthBtn.addEventListener("click", () => {
-        if (selectedMonthIndex === null) return;
-        selectedMonthIndex = (selectedMonthIndex + 1) % 12;
-        updateView();
-      });
-    document.addEventListener("click", (e) => {
-      if (dp && !dp.contains(e.target) && e.target !== birthDisplay) closeDP();
+
+      if (firstInvalid) {
+        showError("กรุณากรอกข้อมูลให้ครบ");
+        firstInvalid.focus();
+        e.preventDefault();
+      }
     });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeDP();
+
+    form.addEventListener("input", (e) => {
+      const el = e.target;
+      if (["INPUT", "SELECT", "TEXTAREA"].includes(el.tagName)) {
+        markInvalid(el, isEmpty(el.value));
+        clearError();
+      }
     });
+  }
 
-    // Address copy
-const chk = document.getElementById("useRegAddress");
+  // ================= ADDRESS COPY =================
+  function initAddressCopy() {
+    const chk = $("useRegAddress");
+    const contact = $("contactAddress");
 
-const regAddress = document.querySelector('[name="reg_address"]');
-const subdistrict = document.getElementById("subdistrict");
-const district = document.getElementById("district");
-const province = document.getElementById("province");
-const zipcode = document.getElementById("zipcode");
+    if (!chk || !contact) return;
 
-const contact = document.getElementById("contactAddress");
+    chk.addEventListener("change", () => {
+      if (!chk.checked) {
+        contact.readOnly = false;
+        contact.classList.remove("bg-slate-100/40");
+        return;
+      }
 
-// --- replace the old if (chk) { ... } block with this ---
-if (chk) {
-  chk.addEventListener("change", function () {
-    if (chk.checked) {
       const parts = [];
 
-      // 🔥 ลบแค่คำ label แต่ไม่กันซ้ำแล้ว
-      let clean = (regAddress && regAddress.value) ? String(regAddress.value) : ""; //แก้ตรงกรอกให้รองรับ / ด้วย
-      clean = clean.replace(/(แขวง|ตำบล|เขต|อำเภอ|จังหวัด)/gi, "")
-             .replace(/[,;()]/g, " ")   // <-- ไม่ลบ /
-             .replace(/\s{2,}/g, " ")
-             .trim();
+      const reg = document.querySelector('[name="reg_address"]')?.value || "";
+      const clean = reg
+        .replace(/(แขวง|ตำบล|เขต|อำเภอ|จังหวัด)/gi, "")
+        .replace(/[,;()]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 
       if (clean) parts.push(clean);
 
-      // 🔥 ใส่ทุกค่าเลย ไม่เช็คซ้ำ
-      if (subdistrict?.value) parts.push(subdistrict.value.trim());
-      if (district?.value) parts.push(district.value.trim());
-      if (province?.value) parts.push(province.value.trim());
-      if (zipcode?.value) parts.push(zipcode.value.trim());
+      ["subdistrict", "district", "province", "zipcode"].forEach((id) => {
+        const val = $(id)?.value;
+        if (val) parts.push(val.trim());
+      });
 
-      if (contact) {
-        contact.value = parts.join(" ");
-        contact.readOnly = true;
-        contact.classList.add("bg-slate-100/40");
-      }
-
-    } else {
-      if (contact) {
-        contact.readOnly = false;
-        contact.classList.remove("bg-slate-100/40");
-      }
-    }
-  });
-
-  // ให้ทำงานทันทีตอนโหลด
-  if (chk.checked) {
-    chk.dispatchEvent(new Event("change"));
+      contact.value = parts.join(" ");
+      contact.readOnly = true;
+      contact.classList.add("bg-slate-100/40");
+    });
   }
-}
-    // ID boxes: join into hidden
-    const idBoxes = document.querySelectorAll("#idBoxContainer input");
-    const idHidden =
-      $("id_card_input") || document.querySelector('input[name="id_card"]');
-    if (idBoxes && idBoxes.length) {
-      idBoxes.forEach((input, idx) => {
-        input.addEventListener("input", (e) => {
-          input.value = input.value.replace(/[^0-9]/g, "").slice(0, 1);
-          if (input.value && idBoxes[idx + 1]) idBoxes[idx + 1].focus();
-          if (idHidden)
-            idHidden.value = Array.from(idBoxes)
-              .map((x) => x.value || "")
-              .join("");
-        });
-        input.addEventListener("keydown", (e) => {
-          if (e.key === "Backspace" && !input.value && idBoxes[idx - 1]) {
-            idBoxes[idx - 1].focus();
-          }
-        });
+
+  // ================= ID CARD =================
+  function initIdCard() {
+    const boxes = document.querySelectorAll("#idBoxContainer input");
+    const hidden = document.querySelector('[name="id_card"]');
+
+    if (!boxes.length || !hidden) return;
+
+    boxes.forEach((input, i) => {
+      input.addEventListener("input", () => {
+        input.value = input.value.replace(/\D/g, "").slice(0, 1);
+        if (input.value && boxes[i + 1]) boxes[i + 1].focus();
+
+        hidden.value = [...boxes].map((x) => x.value || "").join("");
       });
-      // fill from hidden if value exists
-      if (idHidden && idHidden.value) {
-        const val = idHidden.value;
-        for (let i = 0; i < idBoxes.length; i++) {
-          if (idBoxes[i]) idBoxes[i].value = val[i] || "";
-        }
-      }
-    }
+    });
+  }
 
-    // reset button
-    const resetBtn = $("resetBtn") || document.getElementById("resetBtn");
-    if (resetBtn) {
-  resetBtn.addEventListener("click", () => {
-    const keep = [
-      "writtenAt",
-      "todayDay",
-      "todayMonth",
-      "todayYear",
-      "todayISO",
-    ];
+  // ================= SIGNATURE =================
+  function initSignature() {
+    const input = $("signatureInput");
+    const preview = $("signaturePreview");
+    const placeholder = $("placeholderText");
 
-    document
-      .querySelectorAll(
-        "#cardForm input, #cardForm textarea, #cardForm select, #govCardForm input, #govCardForm textarea, #govCardForm select",
-      )
-      .forEach((el) => {
-        if (keep.includes(el.id)) return;
-        if (el.type === "checkbox") el.checked = false;
-        else if (el.type !== "hidden") el.value = "";
-      });
+    if (!input) return;
 
-    if (contact) {
-      contact.readOnly = false;
-      contact.classList.remove("bg-slate-100/40");
-    }
+    input.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    // ✅ reset signature ต้องอยู่ในนี้
-    if (signatureInput) signatureInput.value = "";
-
-    if (signaturePreview) {
-      signaturePreview.src = "";
-      signaturePreview.classList.add("hidden");
-    }
-
-    if (signaturePlaceholder) {
-      signaturePlaceholder.classList.remove("hidden");
-    }
-  });
-}
-
-    // form submit: ensure id_hidden joined
-    const formEl = $("cardForm") || $("govCardForm");
-    if (formEl) {
-      formEl.addEventListener("submit", function (e) {
-        if (idHidden)
-          idHidden.value = Array.from(
-            document.querySelectorAll("#idBoxContainer input"),
-          )
-            .map((x) => x.value || "")
-            .join("");
-        // optionally add client-side validation here
-      });
-    }
-    
-if (signatureInput) {
-  signatureInput.addEventListener("change", function (e) {
-    const file = e.target.files[0];
-
-    if (file) {
       const reader = new FileReader();
-
-      reader.onload = function (ev) {
-        if (signaturePreview) {
-          signaturePreview.src = ev.target.result;
-          signaturePreview.classList.remove("hidden");
-        }
-        if (signaturePlaceholder) {
-          signaturePlaceholder.classList.add("hidden");
-        }
+      reader.onload = (ev) => {
+        preview.src = ev.target.result;
+        preview.classList.remove("hidden");
+        placeholder.classList.add("hidden");
       };
-
       reader.readAsDataURL(file);
-    }
+    });
+  }
+
+  // ================= RESET =================
+  function initReset() {
+    const btn = $("resetBtn");
+    if (!btn) return;
+
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll("#cardForm input, textarea, select")
+        .forEach((el) => {
+          if (el.type === "checkbox") el.checked = false;
+          else if (el.type !== "hidden") el.value = "";
+        });
+    });
+  }
+
+  // ================= INIT =================
+  document.addEventListener("DOMContentLoaded", () => {
+    initBirthDatePicker();
+    setTodayFields();
+    updateAge();
+    initValidation();
+    initAddressCopy();
+    initIdCard();
+    initSignature();
+    initReset();
   });
-}
-  } // end attachEvents
-
-  // Init
-  document.addEventListener("DOMContentLoaded", function () {
-    try {
-      setTodayFields();
-      renderYears();
-      renderMonths();
-      attachEvents();
-
-      // if birth_date already set from server, show it
-      if (birthDateHidden && birthDateHidden.value) {
-        const parts = birthDateHidden.value.split("-");
-        if (parts.length === 3) {
-          const gY = Number(parts[0]),
-            gM = Number(parts[1]),
-            gD = Number(parts[2]);
-          const beY = gY + 543;
-          if (birthDisplay) birthDisplay.value = `${pad(gD)}/${pad(gM)}/${beY}`;
-          updateAge();
-        }
-      }
-    } catch (err) {
-      // console.error('CFCUnuversity.js init error', err);
-    }
-  });
-  // 🔥 EXPORT PDF
-// 🔥 EXPORT PDF
-const exportBtn = document.getElementById("exportPdfBtn");
-
-if (exportBtn) {
-  exportBtn.addEventListener("click", async function () {
-    const form =
-      document.getElementById("cardForm") ||
-      document.getElementById("govCardForm");
-
-    const pk =
-      form?.dataset.pk || exportBtn?.dataset.pk;
-
-    if (!pk) {
-      alert("❌ ไม่พบ ID (pk)");
-      return;
-    }
-
-    try {
-      const res = await fetch(`/cards/export-pdf/${pk}/`);
-
-      if (!res.ok) throw new Error("PDF failed");
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `card_${pk}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      alert("❌ สร้าง PDF ไม่สำเร็จ");
-      console.error(err);
-    }
-  });
-}
-})(); // IIFE
+})();

@@ -1,53 +1,125 @@
+{% load static %}
 <!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
 <title>Print</title>
 
+<script src="https://cdn.tailwindcss.com"></script>
+
 <style>
+@media print {
   body {
-    font-family: "TH Sarabun New", sans-serif;
+    background: white;
   }
-
-  .no-print {
-    margin-bottom: 20px;
-  }
-
-  @media print {
-    .no-print {
-      display: none;
-    }
-  }
+}
 </style>
+
 </head>
 
-<body>
+<body class="bg-white px-16 py-10 text-sm leading-relaxed">
 
-<div class="no-print">
-  <button onclick="window.print()">🖨 Print</button>
-
-  <a href="{% url 'cards:export_pdf' object.pk %}">
-    📄 Export PDF
-  </a>
+<!-- Header -->
+<div class="text-center mb-6">
+  <img src="{% static 'cards/image/Srinakharinwirot_Logo_TH_Color.png' %}" class="mx-auto w-20 mb-2">
+  <h1 class="text-lg font-bold">คำขอมีบัตรประจำตัวบุคลากร</h1>
+  <h2 class="text-sm">มหาวิทยาลัยศรีนครินทรวิโรฒ</h2>
 </div>
 
-<h2 style="text-align:center;">
-  คำขอมีบัตรประจำตัวบุคลากร
-</h2>
+<!-- ข้อมูลทั่วไป -->
+<div class="mb-4 space-y-1">
+  <div><span class="font-medium">ข้าพเจ้า:</span> {{ object.first_name|default:"-" }}</div>
+  <div><span class="font-medium">ชื่อ-สกุล:</span> {{ object.surname|default:"-" }}</div>
+  <div><span class="font-medium">วันเกิด:</span> {{ object.birth_date|date:"j M Y" }}</div>
+  <div><span class="font-medium">อายุ:</span> {% if age %}{{ age }} ปี{% else %}-{% endif %}</div>
+  <div><span class="font-medium">สัญชาติ:</span> {{ object.nationality|default:"-" }}</div>
+  <div><span class="font-medium">หมู่โลหิต:</span> {{ object.blood_type|default:"-" }} {{ object.rh_factor|default:"" }}</div>
+</div>
 
-<p>ชื่อ: {{ object.name }}</p>
-<p>วันเกิด: {{ object.birth_date }}</p>
-<p>ที่อยู่: {{ object.reg_address }}</p>
+<!-- ที่อยู่ -->
+<div class="mb-4 space-y-1">
+  <div>
+    <span class="font-medium">ที่อยู่ตามทะเบียนบ้าน:</span>
+    {{ object.reg_address }}
+    {{ object.subdistrict }}
+    {{ object.district }}
+    {{ object.province }}
+    {{ object.zipcode }}
+  </div>
 
-<hr>
+  <div>
+    <span class="font-medium">ที่อยู่ติดต่อ:</span>
+    {{ object.contact_address|default:"-" }}
+  </div>
 
-<p>เลขบัตร:</p>
-<div>
-  {% for d in id_digits %}
-    <span style="display:inline-block; width:20px; border:1px solid #000; text-align:center;">
-      {{ d }}
-    </span>
-  {% endfor %}
+  <div>
+    <span class="font-medium">โทรศัพท์:</span>
+    {{ object.phone|default:"-" }}
+  </div>
+</div>
+
+<!-- เลขบัตร -->
+<div class="mb-4">
+  <div class="font-medium mb-1">เลขบัตรประชาชน:</div>
+  <div class="flex gap-1">
+    {% for d in id_digits %}
+      <span class="border w-6 h-8 flex items-center justify-center">
+        {{ d }}
+      </span>
+    {% empty %}
+      -
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ประเภท -->
+<div class="mb-4">
+  <div class="font-medium">ประเภทบุคลากร:</div>
+  {% if staff_types %}
+    {% for t in staff_types %}
+      <div>- {{ t }}</div>
+    {% endfor %}
+  {% else %}
+    <div>- {{ object.staff_types|default:"-" }}</div>
+  {% endif %}
+</div>
+
+<!-- หน่วยงาน -->
+<div class="mb-4">
+  <span class="font-medium">หน่วยงาน:</span>
+  {{ object.department|default:"-" }}
+</div>
+
+<!-- เหตุผล -->
+<div class="mb-8">
+  <div class="font-medium">เหตุผล:</div>
+
+  {% if new_reasons %}
+    {% for r in new_reasons %}
+      <div>- {{ r }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if change_reasons %}
+    {% for r in change_reasons %}
+      <div>- {{ r }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if not new_reasons and not change_reasons %}
+    <div>- ไม่มีข้อมูล</div>
+  {% endif %}
+</div>
+
+<!-- ลายเซ็น -->
+<div class="text-right mt-16">
+  {% if object.signature %}
+    <img src="{{ object.signature.url }}" class="h-16 ml-auto mb-2">
+  {% endif %}
+  <div>(ลงชื่อ) ........................................</div>
+  <div class="mt-1">
+    ({{ object.first_name }} {{ object.surname }})
+  </div>
 </div>
 
 </body>

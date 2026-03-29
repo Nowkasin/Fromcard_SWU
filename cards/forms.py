@@ -7,7 +7,7 @@ class BasePersonnelForm(forms.ModelForm):
     class Meta:
         model = PersonnelCardRequest
         fields = [
-            'fullname', 'birth_date',
+            'first_name','surname', 'birth_date',
             'nationality', 'blood_type', 'rh_factor',
 
             'reg_address',

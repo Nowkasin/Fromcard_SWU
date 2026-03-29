@@ -73,32 +73,55 @@ def gov_card_view(request):
         'today_be_year': today.year + 543,
     })
 
-
-# 🖨 PRINT VIEW (HTML)
 def print_card_view(request, pk):
     obj = get_object_or_404(PersonnelCardRequest, pk=pk)
 
+    from datetime import date
     today = date.today()
+
+    # ================= AGE =================
+    age = None
+    if obj.birth_date:
+        age = today.year - obj.birth_date.year
+        if (today.month, today.day) < (obj.birth_date.month, obj.birth_date.day):
+            age -= 1
+
+    # ================= MAP LABEL =================
+    STAFF_MAP = dict(UniversityForm.STAFF_CHOICES)
+    NEW_REASON_MAP = dict(UniversityForm.NEW_REASON_CHOICES)
+    CHANGE_REASON_MAP = dict(UniversityForm.CHANGE_REASON_CHOICES)
+
+    staff_types = [STAFF_MAP.get(x, x) for x in (obj.staff_types or [])]
+    new_reasons = [NEW_REASON_MAP.get(x, x) for x in (obj.new_reasons or [])]
+    change_reasons = [CHANGE_REASON_MAP.get(x, x) for x in (obj.change_reasons or [])]
+
+    # ================= DATE =================
     months = [
         "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
         "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
         "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
     ]
 
+    # ================= ID CARD =================
     id_digits = list(obj.id_card or '')
     id_digits += [''] * (13 - len(id_digits))
 
+    # ================= RENDER =================
     return render(request, 'cards/request_card_print.html', {
         'object': obj,
+        'age': age,
+
+        # 🔥 สำคัญมาก
+        'staff_types': staff_types,
+        'new_reasons': new_reasons,
+        'change_reasons': change_reasons,
+
         'id_digits': id_digits,
         'today_day': f"{today.day:02d}",
         'today_month_name': months[today.month - 1],
         'today_be_year': today.year + 543,
     })
 
-
-# 📄 EXPORT PDF (Puppeteer) - พร้อมดาวน์โหลดทันที & log error
-# 📄 EXPORT PDF (Puppeteer)
 def export_pdf_view(request, pk):
     obj = get_object_or_404(PersonnelCardRequest, pk=pk)
 
@@ -135,7 +158,7 @@ def export_pdf_view(request, pk):
 
         # ส่ง PDF ให้ดาวน์โหลด
         response = HttpResponse(pdf_bytes, content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="card_{pk}.pdf"'
+        response["Content-Disposition"] = f'attachment; filename="{pk}.คำขอมบัตรประจำตัวบุคลากรdf"'
         return response
 
     except subprocess.CalledProcessError as e:
