@@ -1,4 +1,4 @@
-// static/cards/js/CFCUnuversity.js
+// static/cards/js/CFCUniversity.js
 (function () {
   // ================= HELPERS =================
   const thaiMonths = [
@@ -27,163 +27,158 @@
   const ageField = $("age");
 
   function initBirthDatePicker() {
-  if (!birthDisplay || !birthDateHidden) return;
+    if (!birthDisplay || !birthDateHidden) return;
 
-  const dp = $("dp");
-  const yearView = $("yearView");
-  const monthView = $("monthView");
-  const dayView = $("dayView");
-  const daysGrid = $("daysGrid");
-  const monthYearLabel = $("monthYearLabel");
+    const dp = $("dp");
+    const yearView = $("yearView");
+    const monthView = $("monthView");
+    const dayView = $("dayView");
+    const daysGrid = $("daysGrid");
+    const monthYearLabel = $("monthYearLabel");
 
-  const prevBtn = $("prevMonth");
-  const nextBtn = $("nextMonth");
-  const cancelBtn = $("dpCancel");
-  const clearBtn = $("dpClear");
+    const prevBtn = $("prevMonth");
+    const nextBtn = $("nextMonth");
+    const cancelBtn = $("dpCancel");
+    const clearBtn = $("dpClear");
 
-  if (!dp) return;
+    if (!dp) return;
 
-  let selectedYear = null;
-  let selectedMonth = null;
+    let selectedYear = null;
+    let selectedMonth = null;
 
-  // ================= OPEN =================
-  birthDisplay.addEventListener("click", () => {
-    dp.classList.remove("hidden");
-    showYearView();
-  });
-
-  // ================= CLOSE =================
-  cancelBtn?.addEventListener("click", () => {
-    dp.classList.add("hidden");
-  });
-
-  clearBtn?.addEventListener("click", () => {
-    birthDisplay.value = "";
-    birthDateHidden.value = "";
-    if (ageField) ageField.value = "";
-    dp.classList.add("hidden");
-  });
-
-  // ================= YEAR =================
-  function showYearView() {
-    yearView.innerHTML = "";
-    yearView.classList.remove("hidden");
-    monthView.classList.add("hidden");
-    dayView.classList.add("hidden");
-
-    const currentYear = new Date().getFullYear() + 543;
-
-    for (let y = currentYear; y >= currentYear - 100; y--) {
-      const btn = document.createElement("button");
-      btn.textContent = y;
-      btn.className = "border rounded p-1 hover:bg-blue-100";
-
-      btn.onclick = () => {
-        selectedYear = y;
-        showMonthView();
-      };
-
-      yearView.appendChild(btn);
-    }
-  }
-
-  // ================= MONTH =================
-  function showMonthView() {
-    monthView.innerHTML = "";
-    monthView.classList.remove("hidden");
-    yearView.classList.add("hidden");
-
-    thaiMonths.forEach((m, i) => {
-      const btn = document.createElement("button");
-      btn.textContent = m;
-      btn.className = "border rounded p-2 hover:bg-blue-100";
-
-      btn.onclick = () => {
-        selectedMonth = i;
-        showDayView();
-      };
-
-      monthView.appendChild(btn);
+    // ================= OPEN =================
+    birthDisplay.addEventListener("click", () => {
+      dp.classList.remove("hidden");
+      showYearView();
     });
-  }
 
-  // ================= DAY =================
-  function showDayView() {
-    dayView.classList.remove("hidden");
-    monthView.classList.add("hidden");
-    renderCalendar();
-  }
+    // ================= CLOSE =================
+    cancelBtn?.addEventListener("click", () => {
+      dp.classList.add("hidden");
+    });
 
-  function renderCalendar() {
-    daysGrid.innerHTML = "";
+    clearBtn?.addEventListener("click", () => {
+      birthDisplay.value = "";
+      birthDateHidden.value = "";
+      if (ageField) ageField.value = "";
+      dp.classList.add("hidden");
+    });
 
-    const gYear = beToGregorian(selectedYear);
-    const firstDay = new Date(gYear, selectedMonth, 1);
-    const lastDate = new Date(gYear, selectedMonth + 1, 0).getDate();
+    // ================= YEAR =================
+    function showYearView() {
+      yearView.innerHTML = "";
+      yearView.classList.remove("hidden");
+      monthView.classList.add("hidden");
+      dayView.classList.add("hidden");
 
-    monthYearLabel.textContent =
-      thaiMonths[selectedMonth] + " " + selectedYear;
+      const currentYear = new Date().getFullYear() + 543;
 
-    // ช่องว่างก่อนวันแรก
-    for (let i = 0; i < firstDay.getDay(); i++) {
-      const empty = document.createElement("div");
-      daysGrid.appendChild(empty);
+      for (let y = currentYear; y >= currentYear - 100; y--) {
+        const btn = document.createElement("button");
+        btn.textContent = y;
+        btn.className = "border rounded p-1 hover:bg-blue-100";
+
+        btn.onclick = () => {
+          selectedYear = y;
+          showMonthView();
+        };
+
+        yearView.appendChild(btn);
+      }
     }
 
-    for (let d = 1; d <= lastDate; d++) {
-      const btn = document.createElement("button");
-      btn.textContent = d;
-      btn.className = "p-1 hover:bg-green-200 rounded";
+    // ================= MONTH =================
+    function showMonthView() {
+      monthView.innerHTML = "";
+      monthView.classList.remove("hidden");
+      yearView.classList.add("hidden");
 
-      btn.onclick = () => {
-        const iso =
-          gYear + "-" + pad(selectedMonth + 1) + "-" + pad(d);
+      thaiMonths.forEach((m, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = m;
+        btn.className = "border rounded p-2 hover:bg-blue-100";
 
-        birthDateHidden.value = iso;
+        btn.onclick = () => {
+          selectedMonth = i;
+          showDayView();
+        };
 
-        birthDisplay.value =
-          d + " " + thaiMonths[selectedMonth] + " " + selectedYear;
+        monthView.appendChild(btn);
+      });
+    }
 
-        updateAge();
-        dp.classList.add("hidden");
-      };
+    // ================= DAY =================
+    function showDayView() {
+      dayView.classList.remove("hidden");
+      monthView.classList.add("hidden");
+      renderCalendar();
+    }
 
-      daysGrid.appendChild(btn);
+    function renderCalendar() {
+      daysGrid.innerHTML = "";
+
+      const gYear = beToGregorian(selectedYear);
+      const firstDay = new Date(gYear, selectedMonth, 1);
+      const lastDate = new Date(gYear, selectedMonth + 1, 0).getDate();
+
+      monthYearLabel.textContent =
+        thaiMonths[selectedMonth] + " " + selectedYear;
+
+      // ช่องว่างก่อนวันแรก
+      for (let i = 0; i < firstDay.getDay(); i++) {
+        const empty = document.createElement("div");
+        daysGrid.appendChild(empty);
+      }
+
+      for (let d = 1; d <= lastDate; d++) {
+        const btn = document.createElement("button");
+        btn.textContent = d;
+        btn.className = "p-1 hover:bg-green-200 rounded";
+
+        btn.onclick = () => {
+          const iso = gYear + "-" + pad(selectedMonth + 1) + "-" + pad(d);
+
+          birthDateHidden.value = iso;
+
+          birthDisplay.value =
+            d + " " + thaiMonths[selectedMonth] + " " + selectedYear;
+
+          updateAge();
+          dp.classList.add("hidden");
+        };
+
+        daysGrid.appendChild(btn);
+      }
+    }
+
+    // ================= NAV =================
+    prevBtn?.addEventListener("click", () => {
+      selectedMonth--;
+      if (selectedMonth < 0) {
+        selectedMonth = 11;
+        selectedYear--;
+      }
+      renderCalendar();
+    });
+
+    nextBtn?.addEventListener("click", () => {
+      selectedMonth++;
+      if (selectedMonth > 11) {
+        selectedMonth = 0;
+        selectedYear++;
+      }
+      renderCalendar();
+    });
+
+    // ================= LOAD OLD VALUE =================
+    if (birthDateHidden.value) {
+      const d = new Date(birthDateHidden.value);
+      const beYear = gregorianToBE(d.getFullYear());
+
+      birthDisplay.value =
+        d.getDate() + " " + thaiMonths[d.getMonth()] + " " + beYear;
     }
   }
-
-  // ================= NAV =================
-  prevBtn?.addEventListener("click", () => {
-    selectedMonth--;
-    if (selectedMonth < 0) {
-      selectedMonth = 11;
-      selectedYear--;
-    }
-    renderCalendar();
-  });
-
-  nextBtn?.addEventListener("click", () => {
-    selectedMonth++;
-    if (selectedMonth > 11) {
-      selectedMonth = 0;
-      selectedYear++;
-    }
-    renderCalendar();
-  });
-
-  // ================= LOAD OLD VALUE =================
-  if (birthDateHidden.value) {
-    const d = new Date(birthDateHidden.value);
-    const beYear = gregorianToBE(d.getFullYear());
-
-    birthDisplay.value =
-      d.getDate() +
-      " " +
-      thaiMonths[d.getMonth()] +
-      " " +
-      beYear;
-  }
-}
   function setTodayFields() {
     const now = new Date();
     const day = pad(now.getDate());
@@ -371,29 +366,103 @@
       });
     });
   }
-
   // ================= SIGNATURE =================
   function initSignature() {
-    const input = $("signatureInput");
-    const preview = $("signaturePreview");
-    const placeholder = $("placeholderText");
+  const canvas = document.getElementById("signature-pad");
+  const preview = $("signaturePreview");
+  const placeholder = $("placeholderText");
+  const fileInput = document.getElementById("signature-file");
+  const form = document.getElementById("cardForm");
 
-    if (!input) return;
+  if (!canvas || !fileInput) return;
 
-    input.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+  const signaturePad = new SignaturePad(canvas, {
+    minWidth: 0.8,
+    maxWidth: 2.5,
+    penColor: "#000",
+  });
 
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        preview.src = ev.target.result;
-        preview.classList.remove("hidden");
-        placeholder.classList.add("hidden");
-      };
-      reader.readAsDataURL(file);
-    });
+  function resizeCanvas() {
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const data = signaturePad.isEmpty() ? null : signaturePad.toData();
+
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    ctx.scale(ratio, ratio);
+
+    signaturePad.clear();
+    if (data) signaturePad.fromData(data);
   }
 
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  window.saveSignature = function () {
+    if (signaturePad.isEmpty()) {
+      alert("กรุณาวาดลายเซ็นก่อน");
+      return;
+    }
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        alert("ไม่สามารถสร้างไฟล์ลายเซ็นได้");
+        return;
+      }
+
+      const file = new File([blob], "signature.png", { type: "image/png" });
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+
+      if (preview && placeholder) {
+        const url = URL.createObjectURL(blob);
+        preview.src = url;
+        preview.classList.remove("hidden");
+        placeholder.classList.add("hidden");
+      }
+
+      console.log("✅ signature file ready:", file.size);
+    }, "image/png");
+  };
+
+  window.clearSignature = function () {
+    signaturePad.clear();
+    fileInput.value = "";
+
+    if (preview && placeholder) {
+      preview.removeAttribute("src");
+      preview.classList.add("hidden");
+      placeholder.classList.remove("hidden");
+    }
+  };
+
+  form?.addEventListener("submit", function (e) {
+    if (signaturePad.isEmpty()) {
+      alert("กรุณาเซ็นลายเซ็นก่อน");
+      e.preventDefault();
+      return;
+    }
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      e.preventDefault();
+      signaturePad.toBlob?.((blob) => {}, "image/png");
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          alert("ไม่สามารถสร้างไฟล์ลายเซ็นได้");
+          return;
+        }
+        const file = new File([blob], "signature.png", { type: "image/png" });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+        form.submit();
+      }, "image/png");
+    }
+  });
+}
   // ================= RESET =================
   function initReset() {
     const btn = $("resetBtn");

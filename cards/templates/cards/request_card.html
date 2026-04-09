@@ -2,15 +2,17 @@
 {% load i18n %}
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>คำขอมีบัตรประจำตัวบุคลากร</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static 'cards/css/styles.css' %}">
-  <!-- <link rel="stylesheet" href="{% static 'cards/css/A4.css' %}"> -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
-<body class="bg-slate-50 antialiased">
+
+<body class="bg-slate-50 antialiased overflow-x-hidden">
 
   <!-- ไม่พิมพ์ -->
   <div class="absolute top-4 right-4 no-print">
@@ -26,7 +28,7 @@
     <header class="relative mb-6 flex items-center">
       <!-- โลโก้มุมซ้าย -->
       <img src="{% static 'cards/image/Srinakharinwirot_Logo_TH_Color.png' %}" alt="Srinakharinwirot Logo" class="h-36">
-    
+
       <!-- ข้อความอยู่ตรงกลาง -->
       <div class="absolute left-1/2 transform -translate-x-1/2 text-center">
         <h1 class="text-2xl font-semibold">{% trans "คำขอมีบัตรประจำตัวบุคลากร" %}</h1>
@@ -42,7 +44,8 @@
       <div class="md:col-span-2">
         <label class="block text-sm font-medium">{% trans "วันที่เขียนเอกสาร" %}</label>
         <div class="flex items-end gap-4">
-          <input id="todayDay" type="text" readonly class="w-20 border-b border-black text-center" value="{{ today_day }}" />
+          <input id="todayDay" type="text" readonly class="w-20 border-b border-black text-center"
+            value="{{ today_day }}" />
           <input id="todayMonth" type="text" readonly class="w-32 border-b border-black text-center"
             value="{{ today_month_name }}" />
           <input id="todayYear" type="text" readonly class="w-24 border-b border-black text-center"
@@ -58,12 +61,12 @@
       <section class="border border-slate-300 p-4 rounded mb-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium">{% trans "ชื่อจริง" %}</label>
+            <label class="block text-sm font-medium">{% trans "ชื่อ" %}</label>
             <input id="first_name" name="first_name" type="text" required
               class="w-full border-0 border-b border-black focus:outline-none focus:ring-0 bg-transparent py-1"
               placeholder="กรุณากรอกชื่อจริง" value="{{ form.first_name.value|default:'' }}" />
           </div>
-      
+
           <div>
             <label class="block text-sm font-medium">{% trans "นามสกุล" %}</label>
             <input id="surname" name="surname" type="text" required
@@ -78,7 +81,7 @@
             <input id="birthDisplay" type="text" readonly
               class="mt-1 w-full border border-slate-300 rounded px-3 py-2 bg-white cursor-pointer"
               placeholder="คลิกเพื่อเลือกวันเกิด" />
-            <input id="birth_date" name="birth_date" type="hidden"  value="{{ form.birth_date.value|default:'' }}" />
+            <input id="birth_date" name="birth_date" type="hidden" value="{{ form.birth_date.value|default:'' }}" />
 
             <div id="dp" class="hidden absolute z-50 mt-2 bg-white rounded dp-popup w-80 p-3 no-print">
               <div class="flex items-center justify-between mb-2">
@@ -94,7 +97,13 @@
                   <button id="nextMonth" type="button" class="px-2 py-1 text-sm border rounded">ถัดไป</button>
                 </div>
                 <div class="grid grid-cols-7 gap-1 text-xs text-center text-slate-600 mb-1">
-                  <div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
+                  <div>อา</div>
+                  <div>จ</div>
+                  <div>อ</div>
+                  <div>พ</div>
+                  <div>พฤ</div>
+                  <div>ศ</div>
+                  <div>ส</div>
                 </div>
                 <div id="daysGrid" class="grid grid-cols-7 gap-1 text-sm"></div>
               </div>
@@ -130,7 +139,8 @@
 
         <div class="mt-4">
           <label class="block text-sm font-medium">{% trans "ที่อยู่ตามทะเบียนบ้าน" %}</label>
-          <input type="text" required name="reg_address" class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
+          <input type="text" required name="reg_address"
+            class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
             value="{{ form.reg_address.value|default:'' }}">
         </div>
 
@@ -173,7 +183,7 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium">{% trans "หมายเลขบัตรประจำตัวประชาชน / พาสปอร์ต" %}</label>
+              <label class="block text-sm font-medium">{% trans "หมายเลขบัตรประจำตัวประชาชน / Passport" %}</label>
               <input id="idCard" name="id_card" type="text" required maxlength="13"
                 class="mt-1 border-b border-slate-700 py-1 focus:outline-none w-72 tracking-widest"
                 value="{{ form.id_card.value|default:'' }}">
@@ -184,7 +194,7 @@
         <div class="mt-4">
           <label class="block text-sm font-medium">{% trans "ที่อยู่ที่สามารถติดต่อได้" %}</label>
           <div class="flex items-center gap-3 mt-2">
-            <input id="useRegAddress" name="use_reg_address" type="checkbox"  required="w-4 h-4"
+            <input id="useRegAddress" name="use_reg_address" type="checkbox"class="w-4 h-4"
               {% if form.use_reg_address.value %}checked{% endif %} />
             <label for="useRegAddress" class="text-sm">{% trans "ใช้ข้อมูลตามที่อยู่ตามทะเบียนบ้าน" %}</label>
           </div>
@@ -200,135 +210,105 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="staff_types" value="university_staff" class="w-4 h-4">
-            {% trans "พนักงานมหาวิทยาลัย" %}
+            <input type="radio" name="staff_types" value="university_staff" class="w-4 h-4">
+            {% trans "พนักงานมหาวิทยาลัย " %}
           </label>
 
           <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="staff_types" value="employee" class="w-4 h-4">
+            <input type="radio" name="staff_types" value="civil_servant" class="w-4 h-4">
+            {% trans "ข้าราชการ" %}
+
+          </label>
+
+          <label class="inline-flex items-center gap-2">
+            <input type="radio" name="staff_types" value="employee" class="w-4 h-4">
             {% trans "ลูกจ้างมหาวิทยาลัย" %}
           </label>
 
           <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="staff_types" value="foreign_temp" class="w-4 h-4">
-            {% trans "ลูกจ้างชั่วคราวชาวต่างประเทศ" %}
-          </label>
-
-          <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="staff_types" value="civil_servant" class="w-4 h-4">
-            {% trans "ข้าราชการ" %}
-          </label>
-
-          <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="staff_types" value="permanent_employee" class="w-4 h-4">
+            <input type="radio" name="staff_types" value="permanent_employee" class="w-4 h-4">
             {% trans "ลูกจ้างประจำ" %}
           </label>
-
-          <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="staff_types" value="retired_civil_servant" class="w-4 h-4">
-            {% trans "ข้าราชการบำนาญ" %}
           </label>
 
           <label class="inline-flex items-center gap-2">
-            <input type="checkbox" name="staff_types" value="retired" class="w-4 h-4">
-            {% trans "ผู้เกษียณอายุ" %}
+            <input type="radio" name="staff_types" value="retired" class="w-4 h-4">
+            {% trans "ผู้เกษียณอายุ " %}
+          </label>
+
+          <label class="inline-flex items-center gap-2">
+            <input type="radio" name="staff_types" value="foreign_temp" class="w-4 h-4">
+            {% trans "ลูกจ้างชาวต่างประเทศ" %}
           </label>
         </div>
 
-        <div class="mt-3">
-          <label class="block text-sm font-medium">{% trans "รับราชการ/ปฏิบัติงาน/เคยสังกัด/ส่วนงาน" %}</label>
-          <input type="text" required name="department"
-            class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
-            placeholder="........................................................................................................">
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium">{% trans "ตำแหน่ง" %}</label>
+            <input type="text" required name="position"
+              class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
+              placeholder="........................................">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium">{% trans "สังกัด" %}</label>
+            <input type="text" required name="affiliation"
+              class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
+              placeholder="........................................">
+          </div>
         </div>
       </section>
-
       <section class="border border-slate-300 p-4 rounded mb-6">
-        <label class="block text-sm font-medium mb-2">{% trans "กรณี" %}</label>
-
-        <div class="mb-3 opacity-50 pointer-events-none">
-          <label class="inline-flex items-center gap-2">
-            <input type="checkbox" checked class="w-4 h-4">
-            {% trans "ขอมีบัตรครั้งแรก" %}
-          </label>
-        </div>
+        <label class="block text-sm font-medium mb-2">{% trans "กรณี ขอมีบัตรใหม่ไม่ต้องชำระค่าธรรมเนียม" %}</label>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium">{% trans "ขอมีบัตรใหม่เนื่องจาก" %}</label>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
             <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="new_reasons" value="expired" class="w-4 h-4">
+
+              <input type="radio" name="new_reasons" value="expired" class="w-4 h-4">
               {% trans "บัตรหมดอายุ" %}
             </label>
 
             <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="new_reasons" value="lost" class="w-4 h-4">
-              {% trans "บัตรสูญหายหรือถูกทำลาย" %}
+              <input type="radio" name="change_reasons" value="position_change" class="w-4 h-4">
+              {% trans "เปลี่ยนชื่อตำแหน่ง/เลื่อนระดับ" %}
             </label>
-
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="new_reasons" value="damaged" class="w-4 h-4">
-              {% trans "บัตรชำรุด" %}
-            </label>
-          </div>
-
-          <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-sm font-medium">{% trans "หมายเลขบัตรเดิม" %}</label>
-              <input type="text" name="old_card_number"
-                class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
-                placeholder="..............................">
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium">{% trans "หลักฐานประกอบการขอมีบัตร" %}</label>
-              <input type="text" name="evidence"
-                class="mt-1 w-full border-b border-slate-700 py-1 focus:outline-none"
-                placeholder=".......................................................">
-            </div>
           </div>
         </div>
-
         <div>
-          <label class="block text-sm font-medium">{% trans "ขอมีบัตรใหม่เนื่องจาก" %}</label>
-
+          <label class="block text-sm font-medium">{% trans "กรณี ขอมีบัตรใหม่ต้องชำระค่าธรรมเนียม 200 บาท" %}</label>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
             <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="change_reasons" value="position_change" class="w-4 h-4">
-              {% trans "เปลี่ยนตำแหน่ง/เปลี่ยนระดับ/เลื่อนยศ" %}
+              <input type="radio" name="new_reasons" value="damaged" class="w-4 h-4">
+              {% trans "บัตรสูญหาย/ถูกทำลาย/บัตรชำรุด" %}
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="change_reasons" value="name_change" class="w-4 h-4">
+              {% trans "เปลี่ยนชื่อ/เปลี่ยนนามสกุล" %}
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="change_reasons" value="surname_change" class="w-4 h-4">
+              {% trans "ย้ายสังกัด" %}
             </label>
 
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="change_reasons" value="name_change" class="w-4 h-4">
-              {% trans "เปลี่ยนชื่อ" %}
-            </label>
-
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="change_reasons" value="surname_change" class="w-4 h-4">
-              {% trans "เปลี่ยนนามสกุล" %}
-            </label>
-
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="change_reasons" value="title_name_change" class="w-4 h-4">
-              {% trans "เปลี่ยนคำนำหน้าและชื่อสกุล" %}
-            </label>
           </div>
+          <p class="font-semibold mb-2">{% trans "หมายเหตุ" %}</p>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>ให้มอบบัตรประจำตัวบุคลากรเดิมคืนแก่มหาวิทยาลัย
+              หากไม่สามารถนำบัตรประจำตัวบุคลากรเดิมมาส่งคืนได้
+              ให้ทำหนังสือชี้แจงเหตุผลแนบพร้อมคำขอมีบัตรประจำตัวบุคลากร</li>
+            <!-- <li>{% trans "ให้มอบบัตรประจำตัวบุคลากรเดิมคืนแก่มหาวิทยาลัย
+              หากไม่สามารถนำบัตรประจำตัวบุคลากรเดิมมาส่งคืนได้
+              ให้ทำหนังสือชี้แจงเหตุผลแนบพร้อมคำขอมีบัตรประจำตัวบุคลากร" %}</li> -->
+          </ul>
         </div>
       </section>
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end mb-6">
-      
+        <input type="file" id="signature-file" name="signature" hidden accept="image/png">
         <div class="text-center">
-          <div class="mx-auto w-64 h-24 border-b border-black flex items-center justify-center overflow-hidden">
+          <div class="mx-auto w-64 h-24 border-b border-black flex items-center justify-center overflow-hidden mt-3">
             <img id="signaturePreview" class="max-h-full hidden" />
-            <span id="placeholderText" class="text-gray-400 text-sm">
-              {% trans "ยังไม่ได้เลือกลายเซ็น" %}
-            </span>
           </div>
-
-          <input type="file" name="signature" id="signatureInput" accept="image/*"
-            class="mt-2 text-sm mx-auto block no-print" />
-
           <div class="mt-2 text-sm">
             {% trans "(ลงชื่อ)" %} ........................................
           </div>
@@ -337,30 +317,68 @@
           </div>
         </div>
       </section>
-
-      <div class="flex gap-3 no-print">
-        <button type="reset" class="px-4 py-2 border rounded">{% trans "รีเซ็ต" %}</button>
-        <div id="formErrorBox" class="hidden mb-4 rounded border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 no-print"></div>
+      <section class="no-print mt-6">
+        <div class="border border-slate-200 rounded-xl p-5 bg-slate-50 space-y-4">
+          <p class="font-semibold text-slate-900 text-lg">
+            การให้ความยินยอมในการเก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคล
+          </p>
+          <p class="text-[15px] leading-7 text-slate-700">
+            ข้าพเจ้ายินยอมให้มหาวิทยาลัยศรีนครินทรวิโรฒ เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลของข้าพเจ้า
+            เพื่อวัตถุประสงค์ในการดำเนินการจัดทำบัตรประจำตัวบุคลากร
+          </p>
+          <p class="text-[15px] leading-7 text-slate-700">
+            ข้อมูลส่วนบุคคลจะถูกใช้เพื่อการติดต่อ แจ้งข้อมูลข่าวสาร และบริการที่เกี่ยวข้อง
+            โดยอยู่ภายใต้ขอบเขตของกฎหมายที่เกี่ยวข้อง
+          </p>
+          <label class="flex items-start gap-2 pt-2">
+            <input type="checkbox" name="pdpa_consent" required class="mt-1 w-4 h-4">
+            <span class="text-sm leading-6">
+              ข้าพเจ้าได้อ่านและยินยอมตามเงื่อนไข
+              <a href="https://pdpa.swu.ac.th" class="text-blue-600 underline hover:text-blue-800 font-medium ml-1">
+                อ่านรายละเอียดเพิ่มเติม
+              </a>
+            </span>
+          </label>
+        </div>
+      </section>
+      <div class="flex gap-6 no-print mt-6">
+        <button type="reset" class="px-4 py-2 border rounded">{% trans "ล้างข้อมูล" %}</button>
+        <div id="formErrorBox"
+          class="hidden mb-4 rounded border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 no-print"></div>
         <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">{% trans "ส่งแบบฟอร์ม" %}</button>
-          {% if form.instance.pk %}
-          <a href="{% url 'cards:export_pdf' pk=form.instance.pk %}">
-            Export PDF
-          </a>
-          {% endif %}
+        {% if form.instance.pk %}
+        <a href="{% url 'cards:export_pdf' pk=form.instance.pk %}">
+          Export PDF
+        </a>
+        {% endif %}
       </div>
     </form>
   </div>
 
   <!-- ไม่พิมพ์ -->
-  <footer class="no-print text-sm border-t pt-3 mt-6">
-    <p class="font-semibold mb-2">{% trans "หมายเหตุ" %}</p>
-    <ul class="list-disc pl-5 space-y-1">
-      <li>{% trans "กรณีเปลี่ยนแปลงบัตรประจำตัวใหม่ สามารถใช้เว็บไซต์ http://card.op.swu.ac.th โดยการ Login ผ่านรหัสบัวศรีไอดีของมหาวิทยาลัยเพื่อยืนยันตัวตนได้" %}</li>
-    </ul>
+  <footer class="no-print text-sm border-t border-slate-300 pt-6 mt-10 text-slate-700 bg-white">
+    <div class="max-w-3xl mx-auto px-4">
+
+      <!-- หมายเหตุ -->
+      <div class="mb-6">
+        <p class="font-semibold text-slate-900 mb-2 text-xl">
+          {% trans "หมายเหตุ" %}
+        </p>
+        <ul class="list-disc pl-5 space-y-2 leading-7 text-[18px]">
+          <li>
+            {% trans "กรณีเปลี่ยนแปลงบัตรประจำตัวใหม่ สามารถดำเนินการผ่านเว็บไซต์" %}
+            <a href="http://card.op.swu.ac.th" target="_blank"
+              class="text-blue-600 underline hover:text-blue-800 font-medium">
+              card.op.swu.ac.th
+            </a>
+            {% trans "โดยใช้บัญชีบัวศรีไอดี (BUASRI ID) เพื่อยืนยันตัวตน" %}
+          </li>
+        </ul>
+      </div>
   </footer>
 
   <script src="{% static 'cards/js/CFCUniversity.js' %}"></script>
   <script src="{% static 'cards/js/thai_address.js' %}"></script>
   <script src="{% static 'cards/js/address.js' %}"></script>
-</body>
+
 </html>

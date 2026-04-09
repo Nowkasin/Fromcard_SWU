@@ -1,0 +1,41 @@
+@page {
+      size: A4;
+      margin: 8mm;
+    }
+
+    html,
+    body {
+      width: 210mm;
+      min-height: 297mm;
+    }
+
+    body {
+      font-size: 25px;
+      line-height: 1.15;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    * {
+      page-break-inside: avoid;
+    }
+
+    .print-box {
+      transform: scale(0.98);
+      transform-origin: top center;
+    }
+
+    .tight-label {
+      font-size: 18px;
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+
+    .tight-row {
+      margin-top: 4px;
+    }
+
+    .tight-section {
+      margin-bottom: 8px;
+      padding: 10px;
+    }

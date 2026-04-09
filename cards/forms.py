@@ -15,7 +15,6 @@ class BasePersonnelForm(forms.ModelForm):
             'use_reg_address', 'contact_address',
 
             'phone', 'id_card',
-            'old_card_number',
         ]
         widgets = {
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
@@ -36,7 +35,6 @@ class UniversityForm(BasePersonnelForm):
         ('foreign_temp', 'ลูกจ้างชั่วคราวชาวต่างประเทศ'),
         ('civil_servant', 'ข้าราชการ'),
         ('permanent_employee', 'ลูกจ้างประจำ'),
-        ('retired_civil_servant', 'ข้าราชการบำนาญ'),
         ('retired', 'ผู้เกษียณอายุ'),
     ]
 
@@ -50,15 +48,13 @@ class UniversityForm(BasePersonnelForm):
 
     # 🔥 FIX: เพิ่ม expired
     NEW_REASON_CHOICES = [
-        ('first', 'บัตรครั้งแรก'),
-        ('lost', 'บัตรหาย'),
-        ('damaged', 'บัตรชำรุด'),
+        ('damaged', 'บัตรสูญหาย/ถูกทำลาย/บัตรชำรุด'),
         ('expired', 'บัตรหมดอายุ'),  # ✅ แก้ตรงนี้
     ]
 
     CHANGE_REASON_CHOICES = [
-        ('name_change', 'เปลี่ยนชื่อ'),
-        ('position_change', 'เปลี่ยนตำแหน่ง'),
+        ('name_change', 'เปลี่ยนชื่อ/เปลี่ยนนามสกุล'),
+        ('position_change', 'เปลี่ยนชื่อตำแหน่ง/เลื่อนระดับ'),
     ]
 
     # 🔥 FIX: รองรับหลายแบบ (กัน HTML ไม่ตรง)
