@@ -274,13 +274,21 @@
       }
 
       // ✅ 3. reasons
-      if (
-        document.querySelectorAll('[name="new_reasons"]:checked').length ===
-          0 &&
-        document.querySelectorAll('[name="change_reasons"]:checked').length ===
-          0
-      ) {
-        showError("กรุณาเลือกเหตุผลอย่างน้อย 1 รายการ");
+      const newChecked = document.querySelectorAll(
+        '[name="new_reasons"]:checked',
+      ).length;
+      const changeChecked = document.querySelectorAll(
+        '[name="change_reasons"]:checked',
+      ).length;
+
+      if (newChecked === 0 && changeChecked === 0) {
+        showError("กรุณาเลือกเหตุผล");
+        e.preventDefault();
+        return;
+      }
+
+      if (newChecked > 0 && changeChecked > 0) {
+        showError("เลือกเหตุผลได้เพียงอย่างเดียว");
         e.preventDefault();
         return;
       }
@@ -368,101 +376,101 @@
   }
   // ================= SIGNATURE =================
   function initSignature() {
-  const canvas = document.getElementById("signature-pad");
-  const preview = $("signaturePreview");
-  const placeholder = $("placeholderText");
-  const fileInput = document.getElementById("signature-file");
-  const form = document.getElementById("cardForm");
+    const canvas = document.getElementById("signature-pad");
+    const preview = $("signaturePreview");
+    const placeholder = $("placeholderText");
+    const fileInput = document.getElementById("signature-file");
+    const form = document.getElementById("cardForm");
 
-  if (!canvas || !fileInput) return;
+    if (!canvas || !fileInput) return;
 
-  const signaturePad = new SignaturePad(canvas, {
-    minWidth: 0.8,
-    maxWidth: 2.5,
-    penColor: "#000",
-  });
+    const signaturePad = new SignaturePad(canvas, {
+      minWidth: 0.8,
+      maxWidth: 2.5,
+      penColor: "#000",
+    });
 
-  function resizeCanvas() {
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-    const data = signaturePad.isEmpty() ? null : signaturePad.toData();
+    function resizeCanvas() {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const data = signaturePad.isEmpty() ? null : signaturePad.toData();
 
-    const ctx = canvas.getContext("2d");
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    ctx.scale(ratio, ratio);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      ctx.scale(ratio, ratio);
 
-    signaturePad.clear();
-    if (data) signaturePad.fromData(data);
-  }
-
-  resizeCanvas();
-  window.addEventListener("resize", resizeCanvas);
-
-  window.saveSignature = function () {
-    if (signaturePad.isEmpty()) {
-      alert("กรุณาวาดลายเซ็นก่อน");
-      return;
+      signaturePad.clear();
+      if (data) signaturePad.fromData(data);
     }
 
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        alert("ไม่สามารถสร้างไฟล์ลายเซ็นได้");
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    window.saveSignature = function () {
+      if (signaturePad.isEmpty()) {
+        alert("กรุณาวาดลายเซ็นก่อน");
         return;
       }
 
-      const file = new File([blob], "signature.png", { type: "image/png" });
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      fileInput.files = dt.files;
-
-      if (preview && placeholder) {
-        const url = URL.createObjectURL(blob);
-        preview.src = url;
-        preview.classList.remove("hidden");
-        placeholder.classList.add("hidden");
-      }
-
-      console.log("✅ signature file ready:", file.size);
-    }, "image/png");
-  };
-
-  window.clearSignature = function () {
-    signaturePad.clear();
-    fileInput.value = "";
-
-    if (preview && placeholder) {
-      preview.removeAttribute("src");
-      preview.classList.add("hidden");
-      placeholder.classList.remove("hidden");
-    }
-  };
-
-  form?.addEventListener("submit", function (e) {
-    if (signaturePad.isEmpty()) {
-      alert("กรุณาเซ็นลายเซ็นก่อน");
-      e.preventDefault();
-      return;
-    }
-
-    if (!fileInput.files || fileInput.files.length === 0) {
-      e.preventDefault();
-      signaturePad.toBlob?.((blob) => {}, "image/png");
       canvas.toBlob((blob) => {
         if (!blob) {
           alert("ไม่สามารถสร้างไฟล์ลายเซ็นได้");
           return;
         }
+
         const file = new File([blob], "signature.png", { type: "image/png" });
         const dt = new DataTransfer();
         dt.items.add(file);
         fileInput.files = dt.files;
-        form.submit();
+
+        if (preview && placeholder) {
+          const url = URL.createObjectURL(blob);
+          preview.src = url;
+          preview.classList.remove("hidden");
+          placeholder.classList.add("hidden");
+        }
+
+        console.log("✅ signature file ready:", file.size);
       }, "image/png");
-    }
-  });
-}
+    };
+
+    window.clearSignature = function () {
+      signaturePad.clear();
+      fileInput.value = "";
+
+      if (preview && placeholder) {
+        preview.removeAttribute("src");
+        preview.classList.add("hidden");
+        placeholder.classList.remove("hidden");
+      }
+    };
+
+    form?.addEventListener("submit", function (e) {
+      if (signaturePad.isEmpty()) {
+        alert("กรุณาเซ็นลายเซ็นก่อน");
+        e.preventDefault();
+        return;
+      }
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        e.preventDefault();
+        signaturePad.toBlob?.((blob) => {}, "image/png");
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            alert("ไม่สามารถสร้างไฟล์ลายเซ็นได้");
+            return;
+          }
+          const file = new File([blob], "signature.png", { type: "image/png" });
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+          form.submit();
+        }, "image/png");
+      }
+    });
+  }
   // ================= RESET =================
   function initReset() {
     const btn = $("resetBtn");
@@ -477,6 +485,65 @@
         });
     });
   }
+  function initReasonRadioSync() {
+  const radios = document.querySelectorAll(
+    'input[name="new_reasons"], input[name="change_reasons"]'
+  );
+
+  if (!radios.length) return;
+
+  radios.forEach((el) => {
+    el.addEventListener("change", () => {
+
+      // uncheck ตัวอื่นทั้งหมด (เหลือแค่ตัวที่เลือก)
+      radios.forEach((r) => {
+        if (r !== el) {
+          r.checked = false;
+        }
+      });
+
+    });
+  });
+}
+
+function initReasonBasedSections() {
+  const radios = document.querySelectorAll(
+    'input[name="new_reasons"], input[name="change_reasons"]'
+  );
+
+  const paymentSection = $("paymentSection");
+  const oldDataSection = $("oldDataSection");
+
+  if (!radios.length) return;
+
+  const getSelectedReason = () => {
+    const checked = document.querySelector(
+      'input[name="new_reasons"]:checked, input[name="change_reasons"]:checked'
+    );
+    return checked ? checked.value : "";
+  };
+
+  const updateSections = () => {
+    const reason = getSelectedReason();
+
+    const showPayment = ["damaged", "surname_change", "name_change"].includes(reason);
+    const showOldData = reason === "name_change";
+
+    if (paymentSection) paymentSection.classList.toggle("hidden", !showPayment);
+    if (oldDataSection) oldDataSection.classList.toggle("hidden", !showOldData);
+  };
+
+  radios.forEach((el) => {
+    el.addEventListener("change", () => {
+      radios.forEach((r) => {
+        if (r !== el) r.checked = false;
+      });
+      updateSections();
+    });
+  });
+
+  updateSections();
+}
 
   // ================= INIT =================
   document.addEventListener("DOMContentLoaded", () => {
@@ -488,5 +555,7 @@
     initIdCard();
     initSignature();
     initReset();
+    initReasonRadioSync();
+    initReasonBasedSections();
   });
 })();

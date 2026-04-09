@@ -15,7 +15,7 @@ class PersonnelCardRequest(models.Model):
     district = models.CharField("อำเภอ/เขต", max_length=200, blank=True)
     province = models.CharField("จังหวัด", max_length=200, blank=True)
     zipcode = models.CharField("รหัสไปรษณีย์", max_length=5, blank=True)
-
+    evidence_slip = models.FileField(upload_to="evidence_slips/", blank=True, null=True)
     use_reg_address = models.BooleanField("ใช้ที่อยู่ตามทะเบียนบ้าน", default=False)
     contact_address = models.TextField("ที่อยู่ที่สามารถติดต่อได้", blank=True)
 
@@ -23,7 +23,8 @@ class PersonnelCardRequest(models.Model):
     id_card = models.CharField("หมายเลขบัตรประชาชน", max_length=20, blank=True)
 
     department = models.CharField("หน่วยงาน/สังกัด", max_length=300, blank=True)
-
+    position = models.CharField("ตำแหน่ง", max_length=255, blank=True)
+    affiliation = models.CharField("สังกัด", max_length=255, blank=True)
     section = models.CharField("กอง", max_length=255, blank=True)
     subsection = models.CharField("ฝ่าย", max_length=255, blank=True)
     division = models.CharField("ส่วน", max_length=255, blank=True)
@@ -38,10 +39,10 @@ class PersonnelCardRequest(models.Model):
     # ลายเซ็นเอาไว้แค่ตัวเดียว
     signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
 
-    staff_types = models.JSONField(default=list, blank=True)
+    staff_types = models.CharField(max_length=50, blank=True)
     case_types = models.JSONField(default=list, blank=True)
-    new_reasons = models.JSONField(default=list, blank=True)
-    change_reasons = models.JSONField(default=list, blank=True)
+    new_reasons = models.CharField(max_length=50, blank=True)
+    change_reasons = models.CharField(max_length=50, blank=True)
     evidence = models.JSONField(default=list, blank=True)
 
     # รูปภาพอื่น ๆ
@@ -60,3 +61,17 @@ class ThaiAddress(models.Model):
 
     def __str__(self):
         return f"{self.subdistrict} {self.district} {self.province} {self.zipcode}"
+
+class EvidenceFile(models.Model):
+    request = models.ForeignKey(
+        PersonnelCardRequest,
+        on_delete=models.CASCADE,
+        related_name="evidences"
+    )
+    file = models.FileField(upload_to="evidence_files/")
+    file_type = models.CharField(max_length=50, blank=True)  # optional
+
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.file.name}"

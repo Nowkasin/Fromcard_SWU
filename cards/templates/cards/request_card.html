@@ -2,7 +2,6 @@
 {% load i18n %}
 <!doctype html>
 <html lang="th">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -11,9 +10,7 @@
   <link rel="stylesheet" href="{% static 'cards/css/styles.css' %}">
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
-
 <body class="bg-slate-50 antialiased overflow-x-hidden">
-
   <!-- ไม่พิมพ์ -->
   <div class="absolute top-4 right-4 no-print">
     <form action="{% url 'set_language' %}" method="post">
@@ -22,17 +19,21 @@
       <button type="submit" name="language" value="en" class="px-3 py-1 border rounded text-sm">EN</button>
     </form>
   </div>
-
   <!-- พิมพ์เฉพาะส่วนนี้ -->
   <div id="printArea" class="page max-w-4xl mx-auto bg-white p-6 rounded shadow my-8">
     <header class="relative mb-6 flex items-center">
       <!-- โลโก้มุมซ้าย -->
-      <img src="{% static 'cards/image/Srinakharinwirot_Logo_TH_Color.png' %}" alt="Srinakharinwirot Logo" class="h-36">
+      <img src="{% static 'cards/image/Srinakharinwirot_Logo_TH_Color.png' %}" alt="Srinakharinwirot Logo" class="max-h-20 sm:max-h-28 md:max-h-36 w-auto">
 
       <!-- ข้อความอยู่ตรงกลาง -->
       <div class="absolute left-1/2 transform -translate-x-1/2 text-center">
-        <h1 class="text-2xl font-semibold">{% trans "คำขอมีบัตรประจำตัวบุคลากร" %}</h1>
-        <h2 class="text-lg">{% trans "มหาวิทยาลัยศรีนครินทรวิโรฒ" %}</h2>
+        <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-center">
+          {% trans "คำขอมีบัตรประจำตัวบุคลากร" %}
+        </h1>
+        
+        <h2 class="text-sm sm:text-base md:text-lg text-center">
+          {% trans "มหาวิทยาลัยศรีนครินทรวิโรฒ" %}
+        </h2>
       </div>
     </header>
     <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -194,8 +195,7 @@
         <div class="mt-4">
           <label class="block text-sm font-medium">{% trans "ที่อยู่ที่สามารถติดต่อได้" %}</label>
           <div class="flex items-center gap-3 mt-2">
-            <input id="useRegAddress" name="use_reg_address" type="checkbox"class="w-4 h-4"
-              {% if form.use_reg_address.value %}checked{% endif %} />
+            <input id="useRegAddress" name="use_reg_address" type="checkbox" class="w-4 h-4" {% if form.use_reg_address.value %}checked{% endif %} />
             <label for="useRegAddress" class="text-sm">{% trans "ใช้ข้อมูลตามที่อยู่ตามทะเบียนบ้าน" %}</label>
           </div>
           <input id="contactAddress" name="contact_address" type="text" required
@@ -259,50 +259,105 @@
         </div>
       </section>
       <section class="border border-slate-300 p-4 rounded mb-6">
-        <label class="block text-sm font-medium mb-2">{% trans "กรณี ขอมีบัตรใหม่ไม่ต้องชำระค่าธรรมเนียม" %}</label>
-
+        <!-- ไม่เสียค่าธรรมเนียม -->
+        <label class="block text-sm font-medium mb-2">
+          {% trans "กรณี ขอมีบัตรใหม่ไม่ต้องชำระค่าธรรมเนียม" %}
+        </label>
         <div class="mb-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
             <label class="inline-flex items-center gap-2">
-
-              <input type="radio" name="new_reasons" value="expired" class="w-4 h-4">
+              <input type="radio" name="new_reasons" value="expired" data-group="new" class="w-4 h-4">
               {% trans "บัตรหมดอายุ" %}
             </label>
-
             <label class="inline-flex items-center gap-2">
-              <input type="radio" name="change_reasons" value="position_change" class="w-4 h-4">
+              <input type="radio" name="change_reasons" value="position_change" data-group="change" class="w-4 h-4">
               {% trans "เปลี่ยนชื่อตำแหน่ง/เลื่อนระดับ" %}
             </label>
           </div>
         </div>
+        <!-- เสียค่าธรรมเนียม -->
         <div>
-          <label class="block text-sm font-medium">{% trans "กรณี ขอมีบัตรใหม่ต้องชำระค่าธรรมเนียม 200 บาท" %}</label>
+          <label class="block text-sm font-medium">
+            {% trans "กรณี ขอมีบัตรใหม่ต้องชำระค่าธรรมเนียม 200 บาท" %}
+          </label>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
             <label class="inline-flex items-center gap-2">
-              <input type="radio" name="new_reasons" value="damaged" class="w-4 h-4">
+              <input type="radio" name="new_reasons" value="damaged" data-group="new" class="w-4 h-4">
               {% trans "บัตรสูญหาย/ถูกทำลาย/บัตรชำรุด" %}
             </label>
             <label class="inline-flex items-center gap-2">
-              <input type="radio" name="change_reasons" value="name_change" class="w-4 h-4">
+              <input type="radio" name="change_reasons" value="name_change" data-group="change" class="w-4 h-4">
               {% trans "เปลี่ยนชื่อ/เปลี่ยนนามสกุล" %}
             </label>
             <label class="inline-flex items-center gap-2">
-              <input type="radio" name="change_reasons" value="surname_change" class="w-4 h-4">
+              <input type="radio" name="change_reasons" value="surname_change" data-group="change" class="w-4 h-4">
               {% trans "ย้ายสังกัด" %}
             </label>
-
           </div>
-          <p class="font-semibold mb-2">{% trans "หมายเหตุ" %}</p>
+
+          <p class="font-semibold mb-2 mt-4">{% trans "หมายเหตุ" %}</p>
           <ul class="list-disc pl-5 space-y-1">
-            <li>ให้มอบบัตรประจำตัวบุคลากรเดิมคืนแก่มหาวิทยาลัย
+            <li>
+              ให้มอบบัตรประจำตัวบุคลากรเดิมคืนแก่มหาวิทยาลัย
               หากไม่สามารถนำบัตรประจำตัวบุคลากรเดิมมาส่งคืนได้
-              ให้ทำหนังสือชี้แจงเหตุผลแนบพร้อมคำขอมีบัตรประจำตัวบุคลากร</li>
-            <!-- <li>{% trans "ให้มอบบัตรประจำตัวบุคลากรเดิมคืนแก่มหาวิทยาลัย
-              หากไม่สามารถนำบัตรประจำตัวบุคลากรเดิมมาส่งคืนได้
-              ให้ทำหนังสือชี้แจงเหตุผลแนบพร้อมคำขอมีบัตรประจำตัวบุคลากร" %}</li> -->
+              ให้ทำหนังสือชี้แจงเหตุผลแนบพร้อมคำขอมีบัตรประจำตัวบุคลากร
+            </li>
           </ul>
         </div>
+        <!-- ส่วน QR + slip -->
+        <section id="paymentSection" class="hidden border border-slate-300 p-4 rounded mb-6">
+          <p class="font-semibold text-sm mb-3 text-center">ชำระค่าธรรมเนียม 200 บาท</p>
+        
+          <!-- QR อยู่กลาง -->
+          <div class="flex flex-col items-center justify-center mb-6">
+            <p class="text-sm font-medium mb-2">QR Code สำหรับโอนเงิน</p>
+        
+            <img src="{% static 'cards/image/payment-qr.png' %}" alt="QR Code" class="w-60 h-60 object-contain" />
+        
+            <p class="text-xs text-slate-500 mt-2 text-center">
+              กรุณาโอนเงินแล้วแนบสลิปด้านล่าง
+            </p>
+          </div>
+        
+          <!-- upload -->
+          <div class="border rounded p-3 bg-white max-w-md mx-auto">
+            <label class="block text-sm font-medium mb-2 text-center">แนบสลิปโอนเงิน</label>
+            <input type="file" name="evidence_slip" accept="image/*,.pdf" class="block w-full text-sm" />
+            <p class="text-xs text-slate-500 mt-2 text-center">
+              รองรับไฟล์รูปภาพหรือ PDF
+            </p>
+          </div>
+        </section>
+
+        <!-- ส่วนข้อมูลเดิมจากฐานข้อมูล -->
+        <section id="oldDataSection" class="hidden border border-slate-300 p-4 rounded mb-6">
+          <p class="font-semibold text-sm mb-3">ข้อมูลเดิมจากระบบ</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium">ชื่อเดิม</label>
+              <input type="text" readonly class="mt-1 w-full border-b border-slate-700 py-1 bg-slate-100/40"
+                placeholder="รอเชื่อมฐานข้อมูล" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">นามสกุลเดิม</label>
+              <input type="text" readonly class="mt-1 w-full border-b border-slate-700 py-1 bg-slate-100/40"
+                placeholder="รอเชื่อมฐานข้อมูล" />
+            </div>
+            <!-- <div>
+              <label class="block text-sm font-medium">ตำแหน่งเดิม</label>
+              <input type="text" readonly class="mt-1 w-full border-b border-slate-700 py-1 bg-slate-100/40"
+                placeholder="รอเชื่อมฐานข้อมูล" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">สังกัดเดิม</label>
+              <input type="text" readonly class="mt-1 w-full border-b border-slate-700 py-1 bg-slate-100/40"
+                placeholder="รอเชื่อมฐานข้อมูล" />
+            </div> -->
+          </div>
+        </section>
       </section>
+
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end mb-6">
         <input type="file" id="signature-file" name="signature" hidden accept="image/png">
         <div class="text-center">
@@ -376,7 +431,6 @@
         </ul>
       </div>
   </footer>
-
   <script src="{% static 'cards/js/CFCUniversity.js' %}"></script>
   <script src="{% static 'cards/js/thai_address.js' %}"></script>
   <script src="{% static 'cards/js/address.js' %}"></script>
